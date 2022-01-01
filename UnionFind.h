@@ -81,16 +81,21 @@ public:
         while (root_j->GetParent() != nullptr)
             root_j = root_j->GetParent();
         if(root_i == root_j) throw std::exception();
-        int new_size = root_i->GetTreeSize() + root_j->GetTreeSize();
-        root_i->SetTreeSize(new_size);
-        root_j->SetTreeSize(new_size);
+        T t;
         if (root_i->GetTreeSize() >= root_j->GetTreeSize())
         {
             root_j->SetParent(root_i);
-            return root_i->GetData();
+            t = root_i->GetData();
         }
-        root_i->SetParent(root_j);
-        return root_j->GetData();
+        else
+        {
+            root_i->SetParent(root_j);
+            t = root_j->GetData();
+        }
+        int new_size = root_i->GetTreeSize() + root_j->GetTreeSize();
+        root_i->SetTreeSize(new_size);
+        root_j->SetTreeSize(new_size);
+        return t;
     }
 };
 
