@@ -41,6 +41,7 @@ class UnionFind
     int size;
 
 public:
+    UnionFind() = delete;
     UnionFind(int k)
     {
         size = k;
