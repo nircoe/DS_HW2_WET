@@ -4,6 +4,10 @@
 #include "AVLTree.h"
 #include "Player.h"
 #include "library2.h"
+#include "HashTable.h"
+#include <memory>
+using std::make_shared;
+using std::shared_ptr;
 
 class Player;
 
