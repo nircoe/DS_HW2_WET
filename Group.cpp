@@ -1,15 +1,15 @@
 #include "Group.h"
 #include "AVLTree.h"
 
-Group::Group(int g_id) : group_id(g_id) , group_size(0)
+Group::Group(int g_id) : group_id(g_id), group_size(0)
 {
-    group_players_by_level = AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>>();
+    players = AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>>();
 }
-Group::Group(int g_id, int g_size, AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> &g_players_by_level)
+Group::Group(int g_id, int g_size, AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> &g_players)
 {
     group_id = g_id;
     group_size = g_size;
-    group_players_by_level = g_players_by_level;
+    players = g_players;
 }
 int Group::GetId()
 {
@@ -22,19 +22,19 @@ int Group::GetSize()
 StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
 {
     int p_level = p.get()->GetLevel();
-    shared_ptr<AVLTree<shared_ptr<Player>>> p_tree;
-    if (group_players_by_level.Exists(p_level))  //this level tree exists
-        p_tree = group_players_by_level.Find(p_level);
+    shared_ptr<HashTable<shared_ptr<Player>>> ht;
+    if (players.Exists(p_level)) //this level exists in the tree
+        ht = players.Find(p_level);
     else
     {
-        p_tree = make_shared<AVLTree<shared_ptr<Player>>>();
-        if (!group_players_by_level.Insert(p_level, p_tree)) // if Insert return false => allocation error
+        ht = maked_shared<HashTable<shared_ptr<Player>>>();
+        if (!players.Insert(p_level,ht))) // if Insert return false => allocation error
         {
-            p_tree.reset();
+            delete ht;
             return ALLOCATION_ERROR;
         }
     }
-    if (!p_tree.get()->Insert(p.get()->GetId(), p)) // if Insert return false => allocation error
+    if (!ht.get()->Insert(p.get()->GetId(), p)) // if Insert return false => allocation error
         return ALLOCATION_ERROR;
     this->group_size++;
     return SUCCESS;
@@ -42,20 +42,20 @@ StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
 StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
 {
     shared_ptr<AVLTree<shared_ptr<Player>>> p_tree = group_players_by_level.Find(p_level); // not gonna throw because it is Exists
-    p_tree.get()->Remove(p_id);                               // doesn't matter if return true or false
-    if (p_tree.get()->GetTreeSize() == 0)  //no more players in this level tree, so we can remove it
+    p_tree.get()->Remove(p_id);                                                            // doesn't matter if return true or false
+    if (p_tree.get()->GetTreeSize() == 0)                                                  //no more players in this level tree, so we can remove it
     {
         group_players_by_level.Remove(p_level);
     }
     this->group_size--;
     return SUCCESS;
 }
-AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> *Group::GetPlayerByLevel()
+AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> *Group::GetPlayers()
 {
-    return &(this->group_players_by_level);
+    return &(this->players);
 }
-void Group::SetTree(AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> &by_level, int new_size)
+void Group::SetTree(AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> &new_players, int new_size)
 {
     this->group_size = new_size;
-    this->group_players_by_level = by_level;
+    this->players = new_players;
 }
