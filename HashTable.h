@@ -142,6 +142,18 @@ public:
         }
         return false;
     }
+    T Search(int key)
+    {
+        int index = hash(key);
+        Node<T> *current = arr[index];
+        while (current != nullptr)
+        {
+            if (current->key == key)
+                return current->data;
+            current = current->next;
+        }
+        return NULL;
+    }
 
     ~HashTable()
     {

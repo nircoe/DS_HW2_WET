@@ -1,25 +1,28 @@
 #ifndef GROUP_H
 #define GROUP_H
 
+#include <memory>
+
 #include "AVLTree.h"
 #include "HashTable.h"
 #include "Player.h"
 #include "library2.h"
-#include <memory>
+using std::shared_ptr;
 
-const int MAX_SCALE = 200;
 class Player;
 
 class Group
 {
     int group_id;
     int group_size;
-    AVLTree<HashTable<shared_ptr<Player>>> players_by_level;
-    AVLTree<HashTable<shared_ptr<Player>>> players_by_score[MAX_SCALE + 1];
+
+    //* players[0] is all the players in the group,
+    //* players[i] is all the players in the group with score i (0<i<201).
+    AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> **players;
 
 public:
     Group(int g_id);
-    Group(int g_id, int g_size, AVLTree<HashTable<shared_ptr<Player>>> &players);
+    // Group(int g_id, int g_size, AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> &players);
     Group() = delete;
     Group(const Group &) = default;
     ~Group() = default;
