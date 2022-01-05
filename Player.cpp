@@ -1,7 +1,7 @@
 #include "Player.h"
 
-Player::Player() : player_id(-1), player_level(-1), player_group(nullptr) {}
-Player::Player(int p_id, int p_score, shared_ptr<Group> p_group)
+// Player::Player() : player_id(-1), player_level(-1), player_group(-1) {}
+Player::Player(int p_id, int p_score, int p_group)
     : player_id(p_id), player_level(0), player_score(p_score), player_group(p_group) {}
 int Player::GetId()
 {
@@ -11,15 +11,15 @@ int Player::GetLevel()
 {
     return (this != 0) ? this->player_level : -1;
 }
-shared_ptr<Group> Player::GetGroup()
+int Player::GetGroup()
 {
-    return (this != 0) ? this->player_group : nullptr;
+    return (this != 0) ? this->player_group : -1;
 }
 int Player::GetScore()
 {
     return (this != 0) ? this->player_score : -1;
 }
-void Player::SetGroup(shared_ptr<Group> new_group)
+void Player::SetGroup(int new_group)
 {
     this->player_group = new_group;
 }

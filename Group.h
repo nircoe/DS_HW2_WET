@@ -2,20 +2,20 @@
 #define GROUP_H
 
 #include "AVLTree.h"
+#include "HashTable.h"
 #include "Player.h"
 #include "library2.h"
-#include "HashTable.h"
 #include <memory>
-using std::make_shared;
-using std::shared_ptr;
 
+const int MAX_SCALE = 200;
 class Player;
 
 class Group
 {
     int group_id;
     int group_size;
-    AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> players;
+    AVLTree<HashTable<shared_ptr<Player>>> players_by_level;
+    AVLTree<HashTable<shared_ptr<Player>>> players_by_score[MAX_SCALE + 1];
 
 public:
     Group(int g_id);
@@ -29,8 +29,8 @@ public:
     StatusType AddPlayerToGroup(shared_ptr<Player> p);
     StatusType RemovePlayerFromGroup(int p_id, int p_level);
     StatusType RemovePlayerFromGroupWithoutDelete(Player *p);
-    AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> *GetPlayerByLevel();
-    void SetTree(AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> &players, int new_size);
+    //AVLTree<HashTable<shared_ptr<Player>>> *GetPlayerByLevel();
+    //void SetTree(AVLTree<HashTable<shared_ptr<Player>>> &players, int new_size);
 };
 
 #endif

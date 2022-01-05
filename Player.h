@@ -9,11 +9,11 @@ class Player
     int player_id;
     int player_level;
     int player_score;
-    shared_ptr<Group> player_group;
+    int player_group;
 
 public:
-    Player();
-    Player(int id, int score, shared_ptr<Group> group);
+    Player() = delete;
+    Player(int id, int score, int group);
     Player(const Player &) = default;
     ~Player() = default;
     Player &operator=(const Player &) = default;
@@ -21,8 +21,8 @@ public:
     int GetId();
     int GetLevel();
     int GetScore();
-    shared_ptr<Group> GetGroup();
-    void SetGroup(shared_ptr<Group> new_group);
+    int GetGroup();
+    void SetGroup(int new_group);
     void IncrementLevel(int increment);
     void SetScore(int new_score);
 
