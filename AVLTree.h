@@ -1,7 +1,7 @@
 #ifndef AVL_TREE_H
 #define AVL_TREE_H
 #include "AVLExceptions.h"
-// #include <memory>
+#include <memory>
 // using std::make_shared;
 // using std::shared_ptr;
 
@@ -64,7 +64,7 @@ class AVLNode
         this->updateNode();
     }
     int GetCounter() { return (this != 0) ? counter : 0; }
-    int GetSum() { return (this != 0) ? sum ? 0; }
+    int GetSum() { return (this != 0) ? sum : 0; }
     int GetHeight() const { return (this != 0) ? height : -1; }
     int BalanceFactor() const { return this->GetLeft()->GetHeight() - this->GetRight()->GetHeight(); }
     void updateNode()
@@ -422,22 +422,22 @@ public:
         {
         }
     }
-    void SwitchNodeData(int switch_key, T *new_data, AVLNode<T> *node)
-    {
-        if (!node)
-            return;
-        if (node->GetKey() == switch_key)
-        {
-            shared_ptr<T> d = shared_ptr<T>(new_data);
-            node->SetData(d);
-        }
-        else if (node->GetKey() > switch_key)
-        {
-            SwitchNodeData(switch_key, new_data, node->GetLeft());
-        }
-        else if (node->GetKey() < switch_key)
-            SwitchNodeData(switch_key, new_data, node->GetRight());
-    }
+    // void SwitchNodeData(int switch_key, T *new_data, AVLNode<T> *node)
+    // {
+    //     if (!node)
+    //         return;
+    //     if (node->GetKey() == switch_key)
+    //     {
+    //         shared_ptr<T> d = shared_ptr<T>(new_data);
+    //         node->SetData(d);
+    //     }
+    //     else if (node->GetKey() > switch_key)
+    //     {
+    //         SwitchNodeData(switch_key, new_data, node->GetLeft());
+    //     }
+    //     else if (node->GetKey() < switch_key)
+    //         SwitchNodeData(switch_key, new_data, node->GetRight());
+    // }
     AVLNode<T> *GetRoot() const
     {
         return (this != 0) ? root : nullptr;

@@ -3,19 +3,19 @@
 // Player::Player() : player_id(-1), player_level(-1), player_group(-1) {}
 Player::Player(int p_id, int p_score, int p_group)
     : player_id(p_id), player_level(0), player_score(p_score), player_group(p_group) {}
-int Player::GetId()
+int Player::GetId() const
 {
     return (this != 0) ? this->player_id : -1;
 }
-int Player::GetLevel()
+int Player::GetLevel() const
 {
     return (this != 0) ? this->player_level : -1;
 }
-int Player::GetGroup()
+int Player::GetGroup() const
 {
     return (this != 0) ? this->player_group : -1;
 }
-int Player::GetScore()
+int Player::GetScore() const
 {
     return (this != 0) ? this->player_score : -1;
 }
@@ -30,4 +30,13 @@ void Player::IncrementLevel(int increment)
 void Player::SetScore(int new_score)
 {
     this->player_score = new_score;
+}
+std::ostream &operator<<(std::ostream &os, const Player &p)
+{
+
+    os << "(id=" << p.GetId();
+    os << ", L=" << p.GetLevel();
+    os << ", S=" << p.GetScore();
+    os << ", G=" << p.GetGroup() << ")";
+    return os;
 }

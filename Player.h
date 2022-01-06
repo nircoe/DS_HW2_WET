@@ -18,14 +18,14 @@ public:
     ~Player() = default;
     Player &operator=(const Player &) = default;
 
-    int GetId();
-    int GetLevel();
-    int GetScore();
-    int GetGroup();
+    int GetId() const;
+    int GetLevel() const;
+    int GetScore() const;
+    int GetGroup() const;
     void SetGroup(int new_group);
     void IncrementLevel(int increment);
     void SetScore(int new_score);
-
+    friend std::ostream &operator<<(std::ostream &os, const Player &p);
     //friend void LTRInOrderForPlayers(AVLNode<Player> *node, int **array, int *index);
     //friend void RTLInOrderForPlayers(AVLNode<AVLTree<Player>> *node, int **array, int *index);
 };

@@ -1,6 +1,5 @@
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
-
 #include <iostream>
 
 template <class T>
@@ -50,11 +49,11 @@ class HashTable
         for (int i = 0; i < k; i++)
             arr[i] = nullptr;
     }
-    void deleteArray()
+    void deleteArray(int k)
     {
-        for (int i = 0; i < K; i++)
+        for (int i = 0; i < k; i++)
         {
-            Node<T> *current = arr[i];
+            Node<T> *current = this->arr[i];
             Node<T> *temp;
             while (current != nullptr)
             {
@@ -63,32 +62,33 @@ class HashTable
                 current = temp;
             }
         }
-        delete[] arr;
+        delete arr;
     }
-    //todo: corret this
-    void
-    resize()
+    void resize()
     {
-        int old_k = K;
+        int old_k = this->K;
         if (size == K) //* full array
-            K *= 2;
-        else if (size <= K / 4) //* almost empty array
-            K /= 2;
+            this->K *= 2;
+        else if (size <= K / 4 && K > 2) //* almost empty array
+            this->K /= 2;
         else
             return;
+        this->K++; //* keep K odd.
         Node<T> **new_arr = new Node<T> *[this->K];
         for (int i = 0; i < K; i++)
             new_arr[i] = nullptr;
-        for (int i = 0; i <= old_k; i++) //* re-hash all the cells to the new array.
+        //* re-hash all the nodes data to the new array.
+        for (int i = 0; i < old_k; i++)
         {
             Node<T> *temp = arr[i];
             while (temp != nullptr)
             {
                 int new_hash = hash(temp->GetKey());
                 new_arr[new_hash] = new Node<T>(temp->GetKey(), temp->GetData(), new_arr[new_hash]);
+                temp = temp->next;
             }
         }
-        deleteArray();
+        deleteArray(old_k);
         this->arr = new_arr;
     }
     int hash(int key)
@@ -103,9 +103,12 @@ public:
     }
     int Insert(int key, T element = 0)
     {
+        if (this->Search(key))
+            return -1;
         int index = hash(key);
-        //push new node
-        arr[index] = new Node<T>(key, element, arr[index]);
+        //* push new node
+        Node<T> *prev = arr[index];
+        arr[index] = new Node<T>(key, element, prev);
         this->size++;
         this->resize();
         return index;
@@ -124,7 +127,7 @@ public:
             current = current->next;
             while (current != nullptr)
             {
-                if (current->key() == key)
+                if (current->key == key)
                 {
                     prev->next = current->next;
                     break;
@@ -152,31 +155,29 @@ public:
                 return current->data;
             current = current->next;
         }
-        return NULL;
+        return 0;
     }
 
     ~HashTable()
     {
-        deleteArray();
+        deleteArray(K);
     }
 
     friend std::ostream &operator<<(std::ostream &os, const HashTable<T> &ht)
     {
         for (int i = 0; i < ht.K; i++)
         {
-            if (ht.arr[i] != nullptr)
+            os << i << ": ";
+            Node<T> *temp = ht.arr[i];
+            while (temp != nullptr)
             {
-                os << i << ": ";
-                Node<T> *temp = ht.arr[i];
-                while (temp != nullptr)
-                {
-                    os << "-> " << *temp;
-                    temp = temp->GetNext();
-                }
-                os << std::endl;
+                os << "-> " << *temp;
+                temp = temp->GetNext();
             }
+            os << std::endl;
         }
         return os;
     }
 };
+
 #endif

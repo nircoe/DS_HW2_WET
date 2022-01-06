@@ -1,25 +1,65 @@
-#include "HashTable_new.h"
+#include "HashTable.h"
+#include "Player.h"
 #include <iostream>
+#include <time.h>
+#include <math.h>
+#include <vector>
+#include <memory>
+
+using std::cout;
+using std::endl;
+using std::make_shared;
+using std::vector;
 
 int main()
 {
-    HashTable<int> hashtb = HashTable<int>();
-    std::cout << hashtb.Insert(4) << std::endl;
-    std::cout << hashtb << std::endl;
     try
     {
-        std::cout << hashtb.Insert(1) << std::endl;
-        std::cout << hashtb.Insert(8) << std::endl;
-        std::cout << hashtb.Insert(6) << std::endl;
-        std::cout << hashtb.Insert(2) << std::endl;
-        std::cout << hashtb.Insert(12) << std::endl;
-        std::cout << hashtb.Insert(1255) << std::endl;
-        std::cout << hashtb.Insert(55) << std::endl;
+        shared_ptr<Player> sp = make_shared<Player>(3, 4, 5);
+        HashTable<shared_ptr<Player>> ht = HashTable<shared_ptr<Player>>();
+        HashTable<shared_ptr<Player>> ht2 = HashTable<shared_ptr<Player>>();
+        ht.Insert(3, sp);
+        ht2.Insert(3, sp);
+        ht.Delete(3);
+        cout << ht << endl;
+        cout << ht2 << endl;
+        cout << *ht.Search(3).get() << endl;
+
+        /*
+        int rounds = 100;
+        srand(time(NULL));
+        int num, op = 1, index;
+        HashTable<int> ht = HashTable<int>();
+        vector<int> v = {};
+        for (int i = 0; i < rounds; i++)
+        {
+            std::cout << "\x1B[2J\x1B[H";
+            if (op > 0 || v.size() <= 1) //* INSERT
+            {
+                num = rand();
+                ht.Insert(num);
+                v.push_back(num);
+            }
+            // std::cout << "Inserting:  " << num << std::endl;
+            else //* DELETE
+            {
+                int t1 = rand();
+                int t2 = v.size();
+                index = t1 % t2;
+                num = v[index];
+                ht.Delete(num);
+                v.erase(v.begin() + index);
+            }
+            std::cout << ht << std::endl;
+            op = rand() % 3;
+            _sleep(500);
+        }
+        */
     }
     catch (const std::exception &e)
     {
+        std::cout << "FUCK!!!!!!!!!!!!!!!!" << std::endl;
         std::cout << e.what();
     }
-
     return 0;
 }
