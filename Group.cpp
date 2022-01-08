@@ -67,6 +67,17 @@ StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
     }
     return FAILURE;
 }
+std::ostream &operator<<(std::ostream &os, const Group &g)
+{
+    os << "GROUP " << g.group_id << std::endl;
+    shared_ptr<HashTable<shared_ptr<Player>>> *ps = g.players[0]->GetDataArray();
+    for (int i = 0; i < g.group_size; i++)
+    {
+        os << ps->get() << std::endl;
+    }
+
+    return os;
+}
 // AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> *Group::GetPlayers()
 // {
 //     return this->players.;
