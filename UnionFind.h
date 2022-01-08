@@ -37,7 +37,7 @@ class Node // Node for Inverted Tree
 template <typename T>
 class UnionFind
 {
-    Node<T> ** groups;
+    Node<T> **groups;
     T mainGroup;
     int size;
 
@@ -67,12 +67,13 @@ public:
     }
     T Find(int i)
     {
-        if(i < 1 || size < i) throw std::exception(); // maybe our own exception
+        if (i < 1 || size < i)
+            throw std::exception(); // maybe our own exception
         Node<T> *root = groups[i];
         while (root->GetParent() != nullptr)
             root = root->GetParent();
         Node<T> *temp = groups[i];
-        while(temp->GetParent() != nullptr)
+        while (temp->GetParent() != nullptr)
         {
             Node<T> *t = temp;
             temp = temp->GetParent();
@@ -84,16 +85,18 @@ public:
 
     T Union(int i, int j)
     {
-        if ((i < 1 || size < i) || (j < 1 || size < j)) throw std::exception(); // maybe our own exception
+        if ((i < 1 || size < i) || (j < 1 || size < j))
+            throw std::exception(); // maybe our own exception
         Node<T> *root_i = groups[i], *root_j = groups[j];
         while (root_i->GetParent() != nullptr)
             root_i = root_i->GetParent();
         while (root_j->GetParent() != nullptr)
             root_j = root_j->GetParent();
-        if(root_i == root_j) throw std::exception(); // maybe our own exception
-        T t;
+        if (root_i == root_j)
+            throw std::exception(); // maybe our own exception
+        T t;                        //haha titty (.)(.)
         int i_size = root_i->GetTreeSize(), j_size = root_j->GetTreeSize(), new_size = i_size + j_size;
-        if (i_size >= J_size)
+        if (i_size >= j_size)
         {
             root_j->SetParent(root_i);
             t = root_i->GetData();

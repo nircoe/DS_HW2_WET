@@ -179,6 +179,25 @@ public:
         }
         return os;
     }
+    T *GetDataArray()
+    {
+        T *data = new T[this->size];
+        int i = 0;
+        for (int j = 0; j < this.K; j++)
+        {
+            Node<T> *temp = this->arr[j];
+            while (temp != nullptr)
+            {
+                data[i] = temp->data;
+                i++;
+            }
+        }
+        return data;
+    }
+    int GetSize()
+    {
+        return (this != 0) size : -1;
+    }
 };
 
 #endif
