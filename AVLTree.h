@@ -1,6 +1,7 @@
 #ifndef AVL_TREE_H
 #define AVL_TREE_H
 #include "AVLExceptions.h"
+#include "library2.h"
 #include <memory>
 // using std::make_shared;
 // using std::shared_ptr;
@@ -26,6 +27,8 @@ template <typename type>
 void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
 template <typename type>
 double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLevel);
+template <typename type>
+StatusType AverageHighest(AVLTree<type> tree, int m, double *avgLevel);
 
 template <typename T>
 class AVLNode
@@ -93,6 +96,8 @@ class AVLNode
     friend void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
     template <typename type>
     friend double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLevel);
+    template <typename type>
+    friend StatusType AverageHighest(AVLTree<type> tree, int m, double *avgLevel);
 };
 
 template <typename T>
@@ -584,6 +589,8 @@ public:
     friend void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
     template <typename type>
     friend double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLevel);
+    template <typename type>
+    friend StatusType AverageHighest(AVLTree<type> tree, int m, double *avgLevel);
 };
 
 template <typename type>
@@ -709,27 +716,102 @@ double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLeve
     AVLNode<type> *root = tree.GetRoot();
     AVLNode<type> *lower = tree.Find_aux(root, lowerLevel), *higher = tree.Find_aux(root, higherLevel);
     bool lower_added = false, higher_added = false;
-    if(lower == nullptr)
+    if (lower == nullptr)
     {
         type lower_data = type();
-        if(tree.Insert(lowerLevel, lower_data) != true) throw std::exception();
+        if (tree.Insert(lowerLevel, lower_data) != true)
+            throw std::exception();
         lower_added = true;
     }
-    if(higher == nullptr)
+    if (higher == nullptr)
     {
         type higher_data = type();
-        if(tree.Insert(higherLevel, higher_data) != true) throw std::exception();
+        if (tree.Insert(higherLevel, higher_data) != true)
+            throw std::exception();
         higher_added = true;
     }
     double all_players = (double)(root->GetCounter());
-    double lower_then_higherLevel_players = (higher->GetRight() == nullptr) ?
-             all_players : all_players - (double)(higher->GetRight()->GetCounter());
-    double lower_then_lowerLevel_players = (lower->GetLeft() == nullptr) ?
-             0 : (double)(lower->GetLeft()->GetCounter());
-    if(lower_added && tree.Remove(lowerLevel) != true) throw std::exception();
-    if(higher_added && tree.Remove(higherLevel) != true) throw std::exception(); 
+    double lower_then_higherLevel_players = (higher->GetRight() == nullptr) ? all_players : all_players - (double)(higher->GetRight()->GetCounter());
+    double lower_then_lowerLevel_players = (lower->GetLeft() == nullptr) ? 0 : (double)(lower->GetLeft()->GetCounter());
+    if (lower_added && tree.Remove(lowerLevel) != true)
+        throw std::exception();
+    if (higher_added && tree.Remove(higherLevel) != true)
+        throw std::exception();
 
     return lower_then_higherLevel_players - lower_then_lowerLevel_players;
+}
+
+template <typename type>
+StatusType AverageHighest(AVLTree<type> tree, int m, double *avgLevel)
+{
+    AVLNode<type> *node = tree.GetRoot();
+    double sum = 0;
+    int num = 0;
+    while (node != nullptr)
+    {
+        if (m > num + node->GetCounter())
+            return FAILURE;
+        if ((num + node->GetCounter()) == m) // found
+        {
+            *avgLevel = (double)((sum + node->GetSum())) / (double)(m);
+            return SUCCESS;
+        }
+        else if (node->GetRight() != nullptr) // num + node->GetCounter() > m
+        {
+            if (num + node->GetRight()->GetCounter() + node->GetPlayers() == m) // found
+            {
+                *avgLevel = (double)(sum + node->GetRight()->GetSum() + (node->GetPlayers() * node->GetKey())) / (double)(m);
+                return SUCCESS;
+            }
+            else if(num + node->GetRight()->GetCounter() + node->GetPlayers() < m) // go left
+            {
+                sum += (double)(node->GetRight()->GetSum() + (node->GetPlayers() * node->GetKey()));
+                num += node->GetPlayers() + node->GetRight()->GetCounter();
+                node = node->GetLeft();
+            }
+            else if (num + node->GetRight()->GetCounter() + node->GetPlayers() > m)
+            {
+                if (num + node->GetRight()->GetCounter() >= m) // go right
+                {
+                    node = node->GetRight();
+                }
+                else // ( num + node->GetRight()->GetCounter() + node->GetPlayers() ) > m > ( num + node->GetRight()->GetCounter() )
+                {
+                    int diff = m - (num + node->GetRight()->GetCounter());
+                    sum += (double)(node->GetRight()->GetSum() + (diff * node->GetKey()));
+                    *avgLevel = sum / (double)(m);
+                    return SUCCESS;
+                }
+            }
+        }
+        else // no right
+        {
+            if(num + node->GetPlayers() == m) // found
+            {
+                sum += (double)(node->GetPlayers() * node->GetKey());
+                *avgLevel = sum / (double)(m);
+                return SUCCESS;
+            }
+            else if(num + node->GetPlayers() < m) // go left
+            {
+                sum += (double)(node->GetPlayers() * node->GetKey());
+                num += node->GetPlayers();
+                node = node->GetLeft(); // maybe there is no left, will break the while loop and failed, not supposed to happend
+            }
+            else // num + node->GetPlayers() > m > num
+            {
+                int diff = m - num;
+                sum += (double)(diff * node->GetKey());
+                *avgLevel = sum / (double)(m);
+                return SUCCESS;
+            }
+        }
+    }
+    // not supposed to get here :
+    if(num != m)
+        return FAILURE;
+    *avgLevel = sum / (double)(m); // if accedently got here and num == n
+    return SUCCESS;
 }
 
 #endif
