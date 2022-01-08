@@ -92,7 +92,9 @@ StatusType PlayersManager::GetPercentOfPlayersWithScoreInBounds(int GroupID, int
 }
 StatusType PlayersManager::AverageHighestPlayerLevelByGroup(int GroupID, int m, double *avgLevel)
 {
-
+    if (GroupID > numOfGroups)
+        return INVALID_INPUT;
+    shared_ptr<Group> group = (GroupID == 0) ? this->groups.GetMainGroup() : this->groups.Find(GroupID);
 }
 void Quit()
 {
