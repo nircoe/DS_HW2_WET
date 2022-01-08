@@ -38,28 +38,37 @@ template <typename T>
 class UnionFind
 {
     Node<T> ** groups;
+    T mainGroup;
     int size;
 
 public:
-    UnionFind() = delete;
+    UnionFind() : groups(nullptr), mainGroup(), size(-1);
     UnionFind(int k)
     {
         size = k;
         groups = new Node<T> *[k];
-        for (int i = 0; i < k; i++)
+        mainGroup = T(0);
+        for (int i = 1; i <= k; i++)
         {
-            shared_ptr<T> group = make_shared<T>(i + 1);
-            groups[i] = new Node<T>(i + 1, group);
+            T group = T(i);
+            groups[i] = new Node<T>(i, group);
         }
     }
     UnionFind(const UnionFind<T> &) = default;
     UnionFind &operator=(const UnionFind<T> &) = default;
     ~UnionFind() = default;
-
+    int GetSize()
+    {
+        return (this != 0) ? this->size : -1;
+    }
+    T GetMainGroup()
+    {
+        return this->mainGroup;
+    }
     T Find(int i)
     {
         if(i < 1 || size < i) throw std::exception(); // maybe our own exception
-        Node<T>* root = groups[i];
+        Node<T> *root = groups[i];
         while (root->GetParent() != nullptr)
             root = root->GetParent();
         Node<T> *temp = groups[i];

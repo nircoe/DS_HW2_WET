@@ -18,7 +18,7 @@ class Group
 
     //* players[0] is all the players in the group,
     //* players[i] is all the players in the group with score i (0<i<201).
-    AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> **players;
+    AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> *players;
 
 public:
     Group(int g_id);
@@ -31,9 +31,13 @@ public:
     int GetSize();
     StatusType AddPlayerToGroup(shared_ptr<Player> p);
     StatusType RemovePlayerFromGroup(int p_id, int p_level);
+<<<<<<< HEAD
     StatusType RemovePlayerFromGroupWithoutDelete(Player *p);
     friend std::ostream &operator<<(std::ostream &os, const Group &g);
 
+=======
+    StatusType GetPercentOfPlayersWithScoreInBounds(int score, int lowerLevel, int higherLevel, double *players);
+>>>>>>> 74d0a99539e3e9098963346d9b1efe2fefe29df7
     //AVLTree<HashTable<shared_ptr<Player>>> *GetPlayerByLevel();
     //void SetTree(AVLTree<HashTable<shared_ptr<Player>>> &players, int new_size);
 };
