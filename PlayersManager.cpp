@@ -123,7 +123,9 @@ StatusType PlayersManager::AverageHighestPlayerLevelByGroup(int GroupID, int m, 
     if (GroupID > numOfGroups)
         return INVALID_INPUT;
     shared_ptr<Group> group = (GroupID == 0) ? this->groups.GetMainGroup() : this->groups.Find(GroupID);
+    return group.get()->AverageHighestPlayerLevel(m, avgLevel);
 }
-void Quit()
+void PlayersManager::Quit(PlayersManager *pm)
 {
+    delete pm;
 }

@@ -95,6 +95,11 @@ StatusType Group::GetPercentOfPlayersWithScoreInBounds(int score, int lowerLevel
     *players = ((total_players_with_score_in_bound / total_players_in_bound) * 100);
     return SUCCESS;
 }
+
+StatusType Group::AverageHighestPlayerLevel(int m, double *avgLevel)
+{
+    return AverageHighest<shared_ptr<HashTable<shared_ptr<Player>>>>(this->players[0], m, avgLevel);
+}
 // AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> *Group::GetPlayers()
 // {
 //     return this->players.;

@@ -94,10 +94,12 @@ StatusType AverageHighestPlayerLevelByGroup(void *DS, int GroupID, int m, double
 StatusType GetPlayersBound(void *DS, int GroupID, int score, int m,
                            int *LowerBoundPlayers, int *HigherBoundPlayers)
 {
-
+    return SUCCESS; // i'm optimist
 }
 
 void Quit(void **DS)
 {
-
+    PlayersManager *pm = ((PlayersManager *)(*DS));
+    pm->Quit(pm);
+    DS = NULL;
 }
