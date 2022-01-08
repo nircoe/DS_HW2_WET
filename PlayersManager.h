@@ -1,6 +1,7 @@
 #ifndef PLAYERS_MANAGER_H
 #define PLAYERS_MANAGER_H
 
+#include "library2.h"
 #include "AVLTree.h"
 #include "UnionFind.h"
 #include "HashTable.h"
@@ -19,21 +20,23 @@ class Player;
 
 class PlayersManager
 {
-    UnionFind<Group> groups;
+    UnionFind<shared_ptr<Group>> groups;
     HashTable<shared_ptr<Player>> playersbyid;
-    AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> playersbylevel;
-    AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> * playersbyscore;
+    int numOfGroups;
+    int maxScore;
+    ~PlayersManager();
 
-    public:
-        PlayersManager() = delete;
-        PlayersManager(int k, int scale)
-        {
-            groups = UnionFind<Group>(k);
-            playersbyid = HashTable<shared_ptr<Player>>();
-            playersbylevel = AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>>();
-            playersbyscore = new AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>>[scale];
-        }
-
+public:
+    PlayersManager() = delete;
+    PlayersManager(int k, int scale);
+    StatusType MergeGroups(int GroupID1, int GroupID2);
+    StatusType AddPlayer(int PlayerID, int GroupID, int score);
+    StatusType RemovePlayer(int PlayerID);
+    StatusType IncreasePlayerIDLevel(int PlayerID, int LevelIncrease);
+    StatusType ChangePlayerIDScore(int PlayerID, int NewScore);
+    StatusType GetPercentOfPlayersWithScoreInBounds(int GroupID, int score, int lowerLevel, int higherLevel, double *players);
+    StatusType AverageHighestPlayerLevelByGroup(int GroupID, int m, double *avgLevel);
+    void Quit();
 };
 
 #endif
