@@ -749,9 +749,9 @@ StatusType AverageHighest(AVLTree<type> tree, int m, double *avgLevel)
     int num = 0;
     while (node != nullptr)
     {
-        if (m > num + node->GetCounter())
+        if ((num + node->GetCounter()) < m) // failure
             return FAILURE;
-        if ((num + node->GetCounter()) == m) // found
+        else if ((num + node->GetCounter()) == m) // found
         {
             *avgLevel = (double)((sum + node->GetSum())) / (double)(m);
             return SUCCESS;
