@@ -375,6 +375,14 @@ private:
             delete node;
         }
     }
+    void UpdateAllRankes(AVLNode<T> *current)
+    {
+        if (current == nullptr)
+            return;
+        UpdateAllRankes(current->left);
+        UpdateAllRankes(current->right);
+        current->updateNode();
+    }
 
 public:
     AVLTree() : root(nullptr), highest(nullptr), lowest(nullptr), size(0) {}
@@ -564,7 +572,6 @@ public:
         GetKeysArray_AUX(root, array, &index);
         return array;
     }
-
     friend class Group;
     friend class Player;
 
@@ -650,7 +657,6 @@ void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index) // right
     LTRInOrderForPlayers(node->GetData().get()->GetRoot(), array, index);
     RTLInOrderForPlayers(node->GetLeft(), array, index);
 }
-
 template <typename type>
 AVLTree<type> *MergeTrees(AVLTree<type> &tr1, AVLTree<type> &tr2)
 {
@@ -699,7 +705,7 @@ AVLTree<type> *MergeTrees(AVLTree<type> &tr1, AVLTree<type> &tr2)
     delete[] data2;
     delete[] merged_data;
     delete[] merged_keys;
-
+    merged_tree->UpdateAllRankes(merged_tree->root);
     return merged_tree;
 }
 
@@ -709,25 +715,27 @@ double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLeve
     AVLNode<type> *root = tree.GetRoot();
     AVLNode<type> *lower = tree.Find_aux(root, lowerLevel), *higher = tree.Find_aux(root, higherLevel);
     bool lower_added = false, higher_added = false;
-    if(lower == nullptr)
+    if (lower == nullptr)
     {
         type lower_data = type();
-        if(tree.Insert(lowerLevel, lower_data) != true) throw std::exception();
+        if (tree.Insert(lowerLevel, lower_data) != true)
+            throw std::exception();
         lower_added = true;
     }
-    if(higher == nullptr)
+    if (higher == nullptr)
     {
         type higher_data = type();
-        if(tree.Insert(higherLevel, higher_data) != true) throw std::exception();
+        if (tree.Insert(higherLevel, higher_data) != true)
+            throw std::exception();
         higher_added = true;
     }
     double all_players = (double)(root->GetCounter());
-    double lower_then_higherLevel_players = (higher->GetRight() == nullptr) ?
-             all_players : all_players - (double)(higher->GetRight()->GetCounter());
-    double lower_then_lowerLevel_players = (lower->GetLeft() == nullptr) ?
-             0 : (double)(lower->GetLeft()->GetCounter());
-    if(lower_added && tree.Remove(lowerLevel) != true) throw std::exception();
-    if(higher_added && tree.Remove(higherLevel) != true) throw std::exception(); 
+    double lower_then_higherLevel_players = (higher->GetRight() == nullptr) ? all_players : all_players - (double)(higher->GetRight()->GetCounter());
+    double lower_then_lowerLevel_players = (lower->GetLeft() == nullptr) ? 0 : (double)(lower->GetLeft()->GetCounter());
+    if (lower_added && tree.Remove(lowerLevel) != true)
+        throw std::exception();
+    if (higher_added && tree.Remove(higherLevel) != true)
+        throw std::exception();
 
     return lower_then_higherLevel_players - lower_then_lowerLevel_players;
 }

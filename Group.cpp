@@ -122,8 +122,63 @@ shared_ptr<Player> *Group::GetAllPlayersInArray()
     }
     return all_players;
 }
+StatusType Group::MergeWith(Group *subgroup)
+{
+    for (int i = 0; i <= MAX_SCALE; i++)
+    {
+
+        int n1 = this->players->GetTreeSize(), n2 = subgroup->players->GetTreeSize();
+        int *keys1 = this->players->GetKeysArray(), *keys2 = subgroup->players->GetKeysArray();
+        Player *data1 = this->players->GetDataArray(), *data2 = subgroup->players->GetDataArray();
+        int i1 = 0, i2 = 0, j = 0;
+        type *merged_data = new type[n1 + n2];
+        int *merged_keys = new int[n1 + n2];
+        while (i1 < n1 && i2 < n2)
+        {
+            if (keys1[i1] < keys2[i2])
+            {
+                merged_data[j] = data1[i1];
+                merged_keys[j] = keys1[i1];
+                i1++;
+            }
+            else if (keys1[i1] > keys2[i2])
+            {
+                merged_data[j] = data2[i2];
+                merged_keys[j] = keys2[i2];
+                i2++;
+            }
+            else //found duplicate key!
+                throw FAILURE_exception();
+            j++;
+        }
+        while (i1 < n1)
+        {
+            merged_data[j] = data1[i1];
+            merged_keys[j] = keys1[i1];
+            i1++;
+            j++;
+        }
+        while (i2 < n2)
+        {
+            merged_data[j] = data2[i2];
+            merged_keys[j] = keys2[i2];
+            i2++;
+            j++;
+        }
+        AVLTree<type> *merged_tree = new AVLTree<type>(merged_keys, merged_data, n1 + n2);
+        delete[] keys1;
+        delete[] keys2;
+        delete[] data1;
+        delete[] data2;
+        delete[] merged_data;
+        delete[] merged_keys;
+        merged_tree->UpdateAllRankes(merged_tree->root);
+        return merged_tree;
+    }
+}
+
 Group::~Group()
 {
-    //Should work, players is an array.
+    //* Should work, players is an array.
     delete[] players;
 }

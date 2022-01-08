@@ -35,6 +35,7 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const Group &g);
     StatusType GetPercentOfPlayersWithScoreInBounds(int score, int lowerLevel, int higherLevel, double *players);
     shared_ptr<Player> *GetAllPlayersInArray();
+    StatusType MergeWith(Group &subgroup);
     //AVLTree<HashTable<shared_ptr<Player>>> *GetPlayerByLevel();
     //void SetTree(AVLTree<HashTable<shared_ptr<Player>>> &players, int new_size);
 };
