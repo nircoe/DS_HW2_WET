@@ -72,6 +72,18 @@ StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
     }
     return FAILURE;
 }
+
+StatusType Group::GetPercentOfPlayersWithScoreInBounds(int score, int lowerLevel, int higherLevel, double *players)
+{
+    double total_players_in_bound, total_players_with_score_in_bound;
+    total_players_in_bound = GetNumOfPlayersInBound<shared_ptr<HashTable<shared_ptr<Player>>>>(this->players[0], lowerLevel, higherLevel);
+    if(total_players_in_bound == 0)
+        return FAILURE;
+    if(score < 1 || MAX_SCALE < score) total_players_with_score_in_bound = 0;
+    else total_players_with_score_in_bound = GetNumOfPlayersInBound<shared_ptr<HashTable<shared_ptr<Player>>>>(this->players[score], lowerLevel, higherLevel);
+    *players = ((total_players_with_score_in_bound / total_players_in_bound) * 100);
+    return SUCCESS;
+}
 // AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> *Group::GetPlayers()
 // {
 //     return this->players.;

@@ -24,6 +24,8 @@ template <typename type>
 void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
 template <typename type>
 void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
+template <typename type>
+double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLevel);
 
 template <typename T>
 class AVLNode
@@ -89,6 +91,8 @@ class AVLNode
     friend void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
     template <typename type>
     friend void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
+    template <typename type>
+    friend double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLevel);
 };
 
 template <typename T>
@@ -578,6 +582,8 @@ public:
     friend void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
     template <typename type>
     friend void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
+    template <typename type>
+    friend double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLevel);
 };
 
 template <typename type>
@@ -695,6 +701,35 @@ AVLTree<type> *MergeTrees(AVLTree<type> &tr1, AVLTree<type> &tr2)
     delete[] merged_keys;
 
     return merged_tree;
+}
+
+template <typename type>
+double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLevel)
+{
+    AVLNode<type> *root = tree.GetRoot();
+    AVLNode<type> *lower = tree.Find_aux(root, lowerLevel), *higher = tree.Find_aux(root, higherLevel);
+    bool lower_added = false, higher_added = false;
+    if(lower == nullptr)
+    {
+        type lower_data = type();
+        if(tree.Insert(lowerLevel, lower_data) != true) throw std::exception();
+        lower_added = true;
+    }
+    if(higher == nullptr)
+    {
+        type higher_data = type();
+        if(tree.Insert(higherLevel, higher_data) != true) throw std::exception();
+        higher_added = true;
+    }
+    double all_players = (double)(root->GetCounter());
+    double lower_then_higherLevel_players = (higher->GetRight() == nullptr) ?
+             all_players : all_players - (double)(higher->GetRight()->GetCounter());
+    double lower_then_lowerLevel_players = (lower->GetLeft() == nullptr) ?
+             0 : (double)(lower->GetLeft()->GetCounter());
+    if(lower_added && tree.Remove(lowerLevel) != true) throw std::exception();
+    if(higher_added && tree.Remove(higherLevel) != true) throw std::exception(); 
+
+    return lower_then_higherLevel_players - lower_then_lowerLevel_players;
 }
 
 #endif

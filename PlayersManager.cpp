@@ -14,9 +14,9 @@ PlayersManager::~PlayersManager()
 
 StatusType PlayersManager::MergeGroups(int GroupID1, int GroupID2)
 {
-    if(GroupID1 > this->numOfGroups || GroupID2 > this->numOfGroups)
+    if(GroupID1 > numOfGroups || GroupID2 > numOfGroups)
         return INVALID_INPUT;
-    
+    // need to complete
 }
 StatusType PlayersManager::AddPlayer(int PlayerID, int GroupID, int score)
 {
@@ -36,7 +36,7 @@ StatusType PlayersManager::AddPlayer(int PlayerID, int GroupID, int score)
 StatusType PlayersManager::RemovePlayer(int PlayerID)
 {
     shared_ptr<Player> player = this->playersbyid.Search(PlayerID);
-    if(player != 0)
+    if(player == 0)
         return FAILURE;
     shared_ptr<Group> group = this->groups.Find(player.get()->GetGroup()),
                          mainGroup = this->groups.GetMainGroup();
@@ -49,15 +49,46 @@ StatusType PlayersManager::RemovePlayer(int PlayerID)
 }
 StatusType PlayersManager::IncreasePlayerIDLevel(int PlayerID, int LevelIncrease)
 {
-    
+    shared_ptr<Player> player = this->playersbyid.Search(PlayerID);
+    if(player == 0)
+        return FAILURE;
+    int p_level = player.get()->GetLevel();
+    shared_ptr<Group> group = this->groups.Find(player.get()->GetGroup()),
+                      mainGroup = this->groups.GetMainGroup();
+    if(group.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS ||
+        mainGroup.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS)
+        return FAILURE;
+    player.get()->IncrementLevel(LevelIncrease);
+    if(group.get()->AddPlayerToGroup(player) != SUCCESS ||
+        mainGroup.get()->AddPlayerToGroup(player) != SUCCESS)
+        return ALLOCATION_ERROR;
+    return SUCCESS;
 }
 StatusType PlayersManager::ChangePlayerIDScore(int PlayerID, int NewScore)
 {
-
+    if(NewScore > maxScore)
+        return INVALID_INPUT;
+    shared_ptr<Player> player = this->playersbyid.Search(PlayerID);
+    if(player == 0)
+        return FAILURE;
+    int p_level = player.get()->GetLevel();
+    shared_ptr<Group> group = this->groups.Find(player.get()->GetGroup()),
+                      mainGroup = this->groups.GetMainGroup();
+    if (group.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS ||
+        mainGroup.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS)
+        return FAILURE;
+    player.get()->SetScore(NewScore);
+    if (group.get()->AddPlayerToGroup(player) != SUCCESS ||
+        mainGroup.get()->AddPlayerToGroup(player) != SUCCESS)
+        return ALLOCATION_ERROR;
+    return SUCCESS;
 }
 StatusType PlayersManager::GetPercentOfPlayersWithScoreInBounds(int GroupID, int score, int lowerLevel, int higherLevel, double *players)
 {
-
+    if(GroupID > numOfGroups)
+        return INVALID_INPUT;
+    shared_ptr<Group> group = (GroupID == 0) ? this->groups.GetMainGroup() : this->groups.Find(GroupID);
+    return group.get()->GetPercentOfPlayersWithScoreInBounds(score, lowerLevel, higherLevel, players);
 }
 StatusType PlayersManager::AverageHighestPlayerLevelByGroup(int GroupID, int m, double *avgLevel)
 {

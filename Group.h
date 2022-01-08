@@ -31,6 +31,7 @@ public:
     int GetSize();
     StatusType AddPlayerToGroup(shared_ptr<Player> p);
     StatusType RemovePlayerFromGroup(int p_id, int p_level);
+    StatusType GetPercentOfPlayersWithScoreInBounds(int score, int lowerLevel, int higherLevel, double *players);
     //AVLTree<HashTable<shared_ptr<Player>>> *GetPlayerByLevel();
     //void SetTree(AVLTree<HashTable<shared_ptr<Player>>> &players, int new_size);
 };

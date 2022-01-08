@@ -41,7 +41,8 @@ public:
 template <class T>
 class HashTable
 {
-    int size, K;
+    int size;
+    int K;
     Node<T> **arr;
     void InitArr(int k)
     {
