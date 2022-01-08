@@ -72,15 +72,26 @@ StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
     }
     return FAILURE;
 }
-
+std::ostream &operator<<(std::ostream &os, const Group &g)
+{
+    os << "GROUP " << g.group_id << std::endl;
+    shared_ptr<HashTable<shared_ptr<Player>>> *ps = g.players[0].GetDataArray();
+    for (int i = 0; i < g.group_size; i++)
+    {
+        os << ps->get() << std::endl;
+    }
+    return os;
+}
 StatusType Group::GetPercentOfPlayersWithScoreInBounds(int score, int lowerLevel, int higherLevel, double *players)
 {
     double total_players_in_bound, total_players_with_score_in_bound;
     total_players_in_bound = GetNumOfPlayersInBound<shared_ptr<HashTable<shared_ptr<Player>>>>(this->players[0], lowerLevel, higherLevel);
-    if(total_players_in_bound == 0)
+    if (total_players_in_bound == 0)
         return FAILURE;
-    if(score < 1 || MAX_SCALE < score) total_players_with_score_in_bound = 0;
-    else total_players_with_score_in_bound = GetNumOfPlayersInBound<shared_ptr<HashTable<shared_ptr<Player>>>>(this->players[score], lowerLevel, higherLevel);
+    if (score < 1 || MAX_SCALE < score)
+        total_players_with_score_in_bound = 0;
+    else
+        total_players_with_score_in_bound = GetNumOfPlayersInBound<shared_ptr<HashTable<shared_ptr<Player>>>>(this->players[score], lowerLevel, higherLevel);
     *players = ((total_players_with_score_in_bound / total_players_in_bound) * 100);
     return SUCCESS;
 }
@@ -98,3 +109,26 @@ StatusType Group::AverageHighestPlayerLevel(int m, double *avgLevel)
 //     this->group_size = new_size;
 //     this->players = new_players;
 // }
+shared_ptr<Player> *Group::GetAllPlayersInArray()
+{
+    shared_ptr<Player> *players_in_ht;
+    shared_ptr<Player> *all_players = new shared_ptr<Player>[group_size];
+    int index = 0;
+    HashTable<std::shared_ptr<Player>> *hts = this->players[0].GetDataArray()->get();
+    int n = this->players[0].GetTreeSize();
+    for (int i = 0; i < n; i++)
+    {
+        players_in_ht = hts[i].GetDataArray();
+        for (int j = 0; j < hts[i].GetSize(); j++)
+        {
+            all_players[index] = players_in_ht[j];
+            index++;
+        }
+    }
+    return all_players;
+}
+Group::~Group()
+{
+    //Should work, players is an array.
+    delete[] players;
+}

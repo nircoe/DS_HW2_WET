@@ -34,9 +34,6 @@ void Player::SetScore(int new_score)
 std::ostream &operator<<(std::ostream &os, const Player &p)
 {
 
-    os << "(id=" << p.GetId();
-    os << ", L=" << p.GetLevel();
-    os << ", S=" << p.GetScore();
-    os << ", G=" << p.GetGroup() << ")";
+    os << "(I=" << p.GetId() << ",L=" << p.GetLevel() << ",S=" << p.GetScore() << ",G=" << p.GetGroup() << ")";
     return os;
 }

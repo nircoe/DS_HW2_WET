@@ -1,5 +1,6 @@
 #include "HashTable.h"
 #include "Player.h"
+#include "Group.h"
 #include <iostream>
 #include <time.h>
 #include <math.h>
@@ -15,6 +16,9 @@ int main()
 {
     try
     {
+        Group g = Group(1);
+
+        /*
         shared_ptr<Player> sp = make_shared<Player>(3, 4, 5);
         HashTable<shared_ptr<Player>> ht = HashTable<shared_ptr<Player>>();
         HashTable<shared_ptr<Player>> ht2 = HashTable<shared_ptr<Player>>();
@@ -24,6 +28,7 @@ int main()
         cout << ht << endl;
         cout << ht2 << endl;
         cout << *ht.Search(3).get() << endl;
+        */
 
         /*
         int rounds = 100;
