@@ -64,7 +64,7 @@ StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
 }
 StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
 {
-    cout << *(players[0].Find(p_level).get());
+    cout << "Group " << this->group_id << " level " << p_level << " before delete"<< std::endl << *(players[0].Find(p_level).get());
     shared_ptr<Player> sp_p = players[0].Find(p_level).get()->Search(p_id);
     if (sp_p != NULL)
     {
@@ -73,6 +73,7 @@ StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
             players[score].Find(p_level).get()->Delete(p_id))
         {
             this->group_size--;
+            cout << "Group " << this->group_id << " level " << p_level << " after delete"<< std::endl << *(players[0].Find(p_level).get());
             return SUCCESS;
         }
     }
@@ -91,13 +92,13 @@ std::ostream &operator<<(std::ostream &os, const Group &g)
 StatusType Group::GetPercentOfPlayersWithScoreInBounds(int score, int lowerLevel, int higherLevel, double *players)
 {
     double total_players_in_bound, total_players_with_score_in_bound;
-    total_players_in_bound = GetNumOfPlayersInBound<shared_ptr<HashTable<shared_ptr<Player>>>>(this->players[0], lowerLevel, higherLevel);
+    total_players_in_bound = this->players[0].GetNumOfPlayersInBound(lowerLevel, higherLevel);
     if (total_players_in_bound == 0)
         return FAILURE;
     if (score < 1 || scale < score)
         total_players_with_score_in_bound = 0;
     else
-        total_players_with_score_in_bound = GetNumOfPlayersInBound<shared_ptr<HashTable<shared_ptr<Player>>>>(this->players[score], lowerLevel, higherLevel);
+        total_players_with_score_in_bound = this->players[score].GetNumOfPlayersInBound(lowerLevel, higherLevel);
     *players = ((total_players_with_score_in_bound / total_players_in_bound) * 100);
     return SUCCESS;
 }
@@ -211,5 +212,5 @@ Group::~Group()
 
 void Group::printlevel0()
 {
-    cout << "Group 1 :" << std::endl << *(this->players[0].Find(0).get()) << std::endl;
+    cout << "Group 0 level 0:" << std::endl << *(this->players[0].Find(0).get()) << std::endl;
 }

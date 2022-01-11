@@ -26,8 +26,8 @@ template <typename type>
 void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
 template <typename type>
 void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
-template <typename type>
-double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLevel);
+//template <typename type>
+//double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLevel);
 template <typename type>
 StatusType AverageHighest(AVLTree<type> tree, int m, double *avgLevel);
 
@@ -100,8 +100,8 @@ class AVLNode
     friend void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
     template <typename type>
     friend void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
-    template <typename type>
-    friend double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLevel);
+    //template <typename type>
+    //friend double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLevel);
     template <typename type>
     friend StatusType AverageHighest(AVLTree<type> tree, int m, double *avgLevel);
 };
@@ -627,6 +627,37 @@ public:
     {
         PreOrderApply_aux(root, func);
     }
+
+    double GetNumOfPlayersInBound(int lowerLevel, int higherLevel)
+    {
+        AVLNode<T> *root = this->root;
+        AVLNode<T> *lower = this->Find_aux(root, lowerLevel), *higher = this->Find_aux(root, higherLevel);
+        bool lower_added = false, higher_added = false;
+        if (lower == nullptr)
+        {
+            //type lower_data = type();
+            if (this->Insert(lowerLevel, 0) != true)
+                throw std::exception();
+            lower_added = true;
+    }
+    if (higher == nullptr)
+    {
+        //type higher_data = type();
+        if (this->Insert(higherLevel, 0) != true)
+            throw std::exception();
+        higher_added = true;
+    }
+    double all_players = (double)(root->GetCounter());
+    double lower_then_higherLevel_players = (higher->GetRight() == nullptr) ? all_players : all_players - (double)(higher->GetRight()->GetCounter());
+    double lower_then_lowerLevel_players = (lower->GetLeft() == nullptr) ? 0 : (double)(lower->GetLeft()->GetCounter());
+    if (lower_added && this->Remove(lowerLevel) != true)
+        throw std::exception();
+    if (higher_added && this->Remove(higherLevel) != true)
+        throw std::exception();
+
+    return lower_then_higherLevel_players - lower_then_lowerLevel_players;
+    }
+
     friend class Group;
     friend class Player;
 
@@ -644,8 +675,8 @@ public:
     friend void LTRInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
     template <typename type>
     friend void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index);
-    template <typename type>
-    friend double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLevel);
+    //template <typename type>
+    //friend double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLevel);
     template <typename type>
     friend StatusType AverageHighest(AVLTree<type> tree, int m, double *avgLevel);
 };
@@ -713,89 +744,6 @@ void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index) // right
     RTLInOrderForPlayers(node->GetRight(), array, index);
     LTRInOrderForPlayers(node->GetData().get()->GetRoot(), array, index);
     RTLInOrderForPlayers(node->GetLeft(), array, index);
-}
-/*
-template <typename type>
-AVLTree<type> *MergeTrees(AVLTree<type> &tr1, AVLTree<type> &tr2)
-{
-    int n1 = tr1.GetTreeSize(), n2 = tr2.GetTreeSize();
-    int *keys1 = tr1.GetKeysArray(), *keys2 = tr2.GetKeysArray();
-    type *data1 = tr1.GetDataArray(), *data2 = tr2.GetDataArray();
-    int i1 = 0, i2 = 0, j = 0;
-    type *merged_data = new type[n1 + n2];
-    int *merged_keys = new int[n1 + n2];
-    while (i1 < n1 && i2 < n2)
-    {
-        if (keys1[i1] < keys2[i2])
-        {
-            merged_data[j] = data1[i1];
-            merged_keys[j] = keys1[i1];
-            i1++;
-        }
-        else if (keys1[i1] > keys2[i2])
-        {
-            merged_data[j] = data2[i2];
-            merged_keys[j] = keys2[i2];
-            i2++;
-        }
-        else //found duplicate key!
-            throw FAILURE_exception();
-        j++;
-    }
-    while (i1 < n1)
-    {
-        merged_data[j] = data1[i1];
-        merged_keys[j] = keys1[i1];
-        i1++;
-        j++;
-    }
-    while (i2 < n2)
-    {
-        merged_data[j] = data2[i2];
-        merged_keys[j] = keys2[i2];
-        i2++;
-        j++;
-    }
-    AVLTree<type> *merged_tree = new AVLTree<type>(merged_keys, merged_data, n1 + n2);
-    delete[] keys1;
-    delete[] keys2;
-    delete[] data1;
-    delete[] data2;
-    delete[] merged_data;
-    delete[] merged_keys;
-    merged_tree->UpdateAllRankes(merged_tree->root);
-    return merged_tree;
-}
-*/
-template <typename type>
-double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLevel)
-{
-    AVLNode<type> *root = tree.GetRoot();
-    AVLNode<type> *lower = tree.Find_aux(root, lowerLevel), *higher = tree.Find_aux(root, higherLevel);
-    bool lower_added = false, higher_added = false;
-    if (lower == nullptr)
-    {
-        type lower_data = type();
-        if (tree.Insert(lowerLevel, lower_data) != true)
-            throw std::exception();
-        lower_added = true;
-    }
-    if (higher == nullptr)
-    {
-        type higher_data = type();
-        if (tree.Insert(higherLevel, higher_data) != true)
-            throw std::exception();
-        higher_added = true;
-    }
-    double all_players = (double)(root->GetCounter());
-    double lower_then_higherLevel_players = (higher->GetRight() == nullptr) ? all_players : all_players - (double)(higher->GetRight()->GetCounter());
-    double lower_then_lowerLevel_players = (lower->GetLeft() == nullptr) ? 0 : (double)(lower->GetLeft()->GetCounter());
-    if (lower_added && tree.Remove(lowerLevel) != true)
-        throw std::exception();
-    if (higher_added && tree.Remove(higherLevel) != true)
-        throw std::exception();
-
-    return lower_then_higherLevel_players - lower_then_lowerLevel_players;
 }
 
 template <typename type>

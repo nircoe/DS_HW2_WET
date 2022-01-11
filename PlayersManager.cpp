@@ -47,7 +47,6 @@ StatusType PlayersManager::RemovePlayer(int PlayerID)
     shared_ptr<Group> group = this->groups->Find(player.get()->GetGroup()),
                       mainGroup = this->groups->GetMainGroup();
     int p_level = player.get()->GetLevel();
-    
     if (playersbyid->Delete(PlayerID) != true ||
         group.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS ||
         mainGroup.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS)
@@ -111,6 +110,6 @@ void PlayersManager::Quit(PlayersManager *pm)
 
 void PlayersManager::printgroup1()
 {
-    shared_ptr<Group> group = this->groups->Find(1);
+    shared_ptr<Group> group = this->groups->GetMainGroup();
     group.get()->printlevel0();
 }
