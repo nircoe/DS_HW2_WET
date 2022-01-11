@@ -51,14 +51,16 @@ StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
                 return ALLOCATION_ERROR;
             }
         }
-        if (!ht_ptr.get()->Insert(p.get()->GetId(), p)) //* if Insert return false => allocation error
+        if (ht_ptr.get()->Insert(p.get()->GetId(), p) == -1) //* if Insert return false => allocation error
             return ALLOCATION_ERROR;
     }
     this->group_size++;
+    cout << "Group " << this->GetId() << std::endl << *(players[0].Find(p_level).get());
     return SUCCESS;
 }
 StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
 {
+    cout << *(players[0].Find(p_level).get());
     shared_ptr<Player> sp_p = players[0].Find(p_level).get()->Search(p_id);
     if (sp_p != NULL)
     {
@@ -76,9 +78,9 @@ std::ostream &operator<<(std::ostream &os, const Group &g)
 {
     os << "GROUP " << g.group_id << std::endl;
     shared_ptr<HashTable<shared_ptr<Player>>> *ps = g.players[0].GetDataArray();
-    for (int i = 0; i < g.group_size; i++)
+    for (int i = 0; ps[i] != nullptr; i++)
     {
-        os << ps->get() << std::endl;
+        os << *(ps[i].get()) << std::endl;
     }
     return os;
 }
@@ -199,4 +201,9 @@ Group::~Group()
 {
     //* Should work, players is an array.
     delete[] players;
+}
+
+void Group::printlevel0()
+{
+    cout << "Group 1 :" << std::endl << *(this->players[0].Find(0).get()) << std::endl;
 }
