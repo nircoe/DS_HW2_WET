@@ -40,6 +40,10 @@ iostream
 Group.h
 /home/nircoe/Desktop/DS_HW2_WET/Group.h
 
+/home/nircoe/Desktop/DS_HW2_WET/PlayersManager.cpp
+PlayersManager.h
+/home/nircoe/Desktop/DS_HW2_WET/PlayersManager.h
+
 /home/nircoe/Desktop/DS_HW2_WET/PlayersManager.h
 library2.h
 /home/nircoe/Desktop/DS_HW2_WET/library2.h
@@ -60,11 +64,5 @@ memory
 Group.h
 /home/nircoe/Desktop/DS_HW2_WET/Group.h
 
-/home/nircoe/Desktop/DS_HW2_WET/library2.h
-
-/home/nircoe/Desktop/DS_HW2_WET/ownTest.cpp
-PlayersManager.h
-/home/nircoe/Desktop/DS_HW2_WET/PlayersManager.h
-library2.h
 /home/nircoe/Desktop/DS_HW2_WET/library2.h
 

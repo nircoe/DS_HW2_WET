@@ -37,6 +37,7 @@ public:
     StatusType AverageHighestPlayerLevel(int m, double *avgLevel);
     shared_ptr<Player> *GetAllPlayersInArray();
     void MergeWith(Group *subgroup);
+    void printlevel0();
     //AVLTree<HashTable<shared_ptr<Player>>> *GetPlayerByLevel();
     //void SetTree(AVLTree<HashTable<shared_ptr<Player>>> &players, int new_size);
 };
