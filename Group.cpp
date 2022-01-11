@@ -32,6 +32,10 @@ int Group::GetSize()
 {
     return (this != 0) ? this->group_size : -1;
 }
+void Group::SetSize(int new_size)
+{
+    this->group_size = new_size;
+}
 StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
 {
     int p_level = p.get()->GetLevel();
@@ -53,9 +57,12 @@ StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
         }
         if (ht_ptr.get()->Insert(p.get()->GetId(), p) == -1) //* if Insert return false => allocation error
             return ALLOCATION_ERROR;
+        players[i].addPlayerTo(p_level, 1);
     }
     this->group_size++;
-    cout << "Group " << this->GetId() << std::endl << *(players[0].Find(p_level).get());
+    cout << "Group " << this->GetId() << std::endl
+         << *(players[0].Find(p_level).get());
+
     return SUCCESS;
 }
 StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
@@ -68,6 +75,8 @@ StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
         if (players[0].Find(p_level).get()->Delete(p_id) &&
             players[score].Find(p_level).get()->Delete(p_id))
         {
+            players[0].addPlayerTo(p_level, -1);
+            players[score].addPlayerTo(p_level, -1);
             this->group_size--;
             return SUCCESS;
         }
@@ -137,6 +146,8 @@ void Group::MergeWith(Group *sub)
         int n1 = this->players[i].GetTreeSize(),
             n2 = sub->players[i].GetTreeSize(),
             i1 = 0, i2 = 0, j = 0;
+        if (n1 + n2 == 0)
+            continue;
         int *keys1 = this->players[i].GetKeysArray(),
             *keys2 = sub->players[i].GetKeysArray(),
             *merged_keys = new int[n1 + n2];
@@ -183,7 +194,7 @@ void Group::MergeWith(Group *sub)
             j++;
         }
         AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> *merged_tree =
-            new AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>>(merged_keys, merged_data, n1 + n2);
+            new AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>>(merged_keys, merged_data, j);
         delete[] keys1;
         delete[] keys2;
         delete[] data1;
@@ -194,7 +205,7 @@ void Group::MergeWith(Group *sub)
         //! I hope this won`t cause problems:
         this->players[i] = *merged_tree;
     }
-    delete sub;
+    //delete sub;
 }
 
 Group::~Group()
@@ -205,5 +216,6 @@ Group::~Group()
 
 void Group::printlevel0()
 {
-    cout << "Group 1 :" << std::endl << *(this->players[0].Find(0).get()) << std::endl;
+    cout << "Group 1 :" << std::endl
+         << *(this->players[0].Find(0).get()) << std::endl;
 }

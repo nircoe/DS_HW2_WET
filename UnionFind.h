@@ -19,9 +19,7 @@ public:
     {
         parents = new int[k + 1];
         groups = new shared_ptr<Group>[k + 1];
-        groups[0] = make_shared<Group>(0, scale);
-        parents[0] = 0;
-        for (int i = 1; i <= k; i++)
+        for (int i = 0; i <= k; i++)
         {
             parents[i] = i;
             groups[i] = make_shared<Group>(i, scale);
@@ -73,7 +71,10 @@ public:
         {
             parents[parent_j] = parent_i;
             shared_ptr<Group> main_group = groups[parent_of_union], sub_group = groups[parent_j];
+            int main_size = main_group.get()->GetSize(), sub_size = sub_group.get()->GetSize();
             main_group.get()->MergeWith(sub_group.get());
+            sub_group.reset();
+            main_group.get()->SetSize(main_size + sub_size);
             groups[parent_j] = main_group;
         }
         else
@@ -81,7 +82,10 @@ public:
             parent_of_union = parent_j;
             parents[parent_i] = parent_j;
             shared_ptr<Group> main_group = groups[parent_of_union], sub_group = groups[parent_i];
+            int main_size = main_group.get()->GetSize(), sub_size = sub_group.get()->GetSize();
             main_group.get()->MergeWith(sub_group.get());
+            sub_group.reset();
+            main_group.get()->SetSize(main_size + sub_size);
             groups[parent_i] = main_group;
         }
         return groups[parent_of_union];

@@ -29,6 +29,7 @@ public:
 
     int GetId();
     int GetSize();
+    void SetSize(int new_size);
     StatusType AddPlayerToGroup(shared_ptr<Player> p);
     StatusType RemovePlayerFromGroup(int p_id, int p_level);
     StatusType RemovePlayerFromGroupWithoutDelete(Player *p);
