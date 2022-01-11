@@ -198,6 +198,17 @@ public:
     {
         return (this != 0) ? size : -1;
     }
+    void MergeWith(HashTable<T> *sub)
+    {
+        for (int i = 0; i < sub.K; i++)
+        {
+            HTNode<T> *current = sub.arr[i];
+            while (current != nullptr)
+            {
+                this->Insert(current->key, current->data);
+                current = current->next;
+            }
+        }
+    }
 };
-
 #endif
