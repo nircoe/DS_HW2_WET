@@ -477,6 +477,12 @@ public:
         {
         }
     }
+    void addPlayerTo(int key, int extra)
+    {
+        AVLNode<T> *node = Find_aux(this->root, key);
+        if (node)
+            node->IncreasePlayers(extra);
+    }
     // void SwitchNodeData(int switch_key, T *new_data, AVLNode<T> *node)
     // {
     //     if (!node)

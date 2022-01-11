@@ -57,9 +57,12 @@ StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
         }
         if (ht_ptr.get()->Insert(p.get()->GetId(), p) == -1) //* if Insert return false => allocation error
             return ALLOCATION_ERROR;
+        players[i].addPlayerTo(p_level, 1);
     }
     this->group_size++;
-    cout << "Group " << this->GetId() << std::endl << *(players[0].Find(p_level).get());
+    cout << "Group " << this->GetId() << std::endl
+         << *(players[0].Find(p_level).get());
+
     return SUCCESS;
 }
 StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
@@ -72,6 +75,8 @@ StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
         if (players[0].Find(p_level).get()->Delete(p_id) &&
             players[score].Find(p_level).get()->Delete(p_id))
         {
+            players[0].addPlayerTo(p_level, -1);
+            players[score].addPlayerTo(p_level, -1);
             this->group_size--;
             cout << "Group " << this->group_id << " level " << p_level << " after delete"<< std::endl << *(players[0].Find(p_level).get());
             return SUCCESS;
@@ -136,13 +141,13 @@ shared_ptr<Player> *Group::GetAllPlayersInArray()
 }
 
 void Group::MergeWith(Group *sub)
-{ 
+{
     for (int i = 0; i <= scale; i++)
     {
         int n1 = this->players[i].GetTreeSize(),
             n2 = sub->players[i].GetTreeSize(),
             i1 = 0, i2 = 0, j = 0;
-        if(n1 + n2 == 0)
+        if (n1 + n2 == 0)
             continue;
         int *keys1 = this->players[i].GetKeysArray(),
             *keys2 = sub->players[i].GetKeysArray(),
