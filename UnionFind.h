@@ -42,7 +42,7 @@ class UnionFind
     int size;
 
 public:
-    UnionFind() : groups(nullptr), mainGroup(), size(-1);
+    UnionFind() : groups(nullptr), mainGroup(), size(-1){}
     UnionFind(int k)
     {
         size = k;

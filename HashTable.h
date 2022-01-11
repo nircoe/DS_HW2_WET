@@ -6,20 +6,20 @@ template <class T>
 class HashTable;
 
 template <class T>
-class Node
+class HTNode
 {
     int key;
     T data;
-    Node<T> *next;
+    HTNode<T> *next;
 
 public:
-    Node() = delete;
-    Node(int key, const T data = 0, Node<T> *next = nullptr) : key(key), data(data), next(next) {}
-    Node(const Node<T> &node) = default;
-    ~Node() = default;
-    Node<T> &operator=(const Node<T> &node) = default;
+    HTNode() = delete;
+    HTNode(int key, const T data = 0, HTNode<T> *next = nullptr) : key(key), data(data), next(next) {}
+    HTNode(const HTNode<T> &HTNode) = default;
+    ~HTNode() = default;
+    HTNode<T> &operator=(const HTNode<T> &HTNode) = default;
     friend class HashTable<T>;
-    friend std::ostream &operator<<(std::ostream &os, const Node<T> &nd)
+    friend std::ostream &operator<<(std::ostream &os, const HTNode<T> &nd)
     {
         os << nd.key;
         return os;
@@ -32,7 +32,7 @@ public:
     {
         return (this != 0) ? this->data : 0;
     }
-    Node<T> *GetNext()
+    HTNode<T> *GetNext()
     {
         return (this != 0) ? this->next : nullptr;
     }
@@ -43,10 +43,10 @@ class HashTable
 {
     int size;
     int K;
-    Node<T> **arr;
+    HTNode<T> **arr;
     void InitArr(int k)
     {
-        arr = new Node<T> *[k];
+        arr = new HTNode<T> *[k];
         for (int i = 0; i < k; i++)
             arr[i] = nullptr;
     }
@@ -54,8 +54,8 @@ class HashTable
     {
         for (int i = 0; i < k; i++)
         {
-            Node<T> *current = this->arr[i];
-            Node<T> *temp;
+            HTNode<T> *current = this->arr[i];
+            HTNode<T> *temp;
             while (current != nullptr)
             {
                 temp = current->next;
@@ -75,17 +75,17 @@ class HashTable
         else
             return;
         this->K++; //* keep K odd.
-        Node<T> **new_arr = new Node<T> *[this->K];
+        HTNode<T> **new_arr = new HTNode<T> *[this->K];
         for (int i = 0; i < K; i++)
             new_arr[i] = nullptr;
-        //* re-hash all the nodes data to the new array.
+        //* re-hash all the HTNodes data to the new array.
         for (int i = 0; i < old_k; i++)
         {
-            Node<T> *temp = arr[i];
+            HTNode<T> *temp = arr[i];
             while (temp != nullptr)
             {
                 int new_hash = hash(temp->GetKey());
-                new_arr[new_hash] = new Node<T>(temp->GetKey(), temp->GetData(), new_arr[new_hash]);
+                new_arr[new_hash] = new HTNode<T>(temp->GetKey(), temp->GetData(), new_arr[new_hash]);
                 temp = temp->next;
             }
         }
@@ -107,9 +107,9 @@ public:
         if (this->Search(key))
             return -1;
         int index = hash(key);
-        //* push new node
-        Node<T> *prev = arr[index];
-        arr[index] = new Node<T>(key, element, prev);
+        //* push new HTNode
+        HTNode<T> *prev = arr[index];
+        arr[index] = new HTNode<T>(key, element, prev);
         this->size++;
         this->resize();
         return index;
@@ -117,14 +117,14 @@ public:
     bool Delete(int key)
     {
         int index = hash(key);
-        Node<T> *current = arr[index];
+        HTNode<T> *current = arr[index];
         if (current->key == key)
         {
             arr[index] = current->next;
         }
         else
         {
-            Node<T> *prev = current;
+            HTNode<T> *prev = current;
             current = current->next;
             while (current != nullptr)
             {
@@ -149,7 +149,7 @@ public:
     T Search(int key)
     {
         int index = hash(key);
-        Node<T> *current = arr[index];
+        HTNode<T> *current = arr[index];
         while (current != nullptr)
         {
             if (current->key == key)
@@ -169,7 +169,7 @@ public:
         for (int i = 0; i < ht.K; i++)
         {
             os << i << ": ";
-            Node<T> *temp = ht.arr[i];
+            HTNode<T> *temp = ht.arr[i];
             while (temp != nullptr)
             {
                 os << "-> " << *temp;
@@ -185,7 +185,7 @@ public:
         int i = 0;
         for (int j = 0; j < this.K; j++)
         {
-            Node<T> *temp = this->arr[j];
+            HTNode<T> *temp = this->arr[j];
             while (temp != nullptr)
             {
                 data[i] = temp->data;

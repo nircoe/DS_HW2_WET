@@ -39,11 +39,6 @@ int main()
         cout << sp.use_count() << endl;
         tr->PostOrderApply(std::function<void(shared_ptr<Player>)>(&delete_sp));
         delete tr;
-        // tr->InOrderApply(std::function<void(shared_ptr<Player>)>(&print_p));
-        cout << endl;
-        cout << tr->GetTreeSize() << endl;
-        // delete tr;
-        // cout << *sp.get() << endl;
         cout << "FINISH" << endl;
         /*
         shared_ptr<Player> sp = make_shared<Player>(3, 4, 5);
