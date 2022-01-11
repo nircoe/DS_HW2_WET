@@ -183,7 +183,7 @@ public:
     {
         T *data = new T[this->size];
         int i = 0;
-        for (int j = 0; j < this.K; j++)
+        for (int j = 0; j < this->K; j++)
         {
             HTNode<T> *temp = this->arr[j];
             while (temp != nullptr)

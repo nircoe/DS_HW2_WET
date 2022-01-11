@@ -1,114 +1,83 @@
 #ifndef UNION_FIND_H
 #define UNION_FIND_H
 #include <memory>
+#include "Group.h"
 using std::make_shared;
 using std::shared_ptr;
 
-template <typename T>
-class Node; // Node for Inverted Tree
-template <typename T>
-class UnionFind;
+class Group;
 
-template <typename T>
-class Node // Node for Inverted Tree
-{
-    int key;
-    int tree_size;
-    T data;
-    Node *parent;
-
-    Node();
-    Node(int new_key, T new_data) : key(new_key), tree_size(1), data(new_data), parent(nullptr) {}
-    Node(const Node<T> &) = default;
-    Node &operator=(const Node &) = default;
-    ~Node() = default;
-
-    int GetKey() const { return (this != 0) ? key : -1; }
-    int GetTreeSize() const { return (this != 0) ? tree_size : 0; }
-    T GetData() { return this->data; }
-    void SetTreeSize(int new_size) { tree_size = new_size; }
-    void SetData(T new_data) { data = new_data; }
-    void SetParent(Node *new_parent) { parent = new_parent; }
-    Node *GetParent() const { return (this != 0) ? parent : nullptr; }
-
-    friend class UnionFind<T>;
-};
-
-template <typename T>
 class UnionFind
 {
-    Node<T> **groups;
-    T mainGroup;
+    int *parents;
+    shared_ptr<Group> *groups;
     int size;
 
 public:
-    UnionFind() : groups(nullptr), mainGroup(), size(-1){}
-    UnionFind(int k)
+    UnionFind() : parents(nullptr), groups(nullptr), size(-1){};
+    UnionFind(int k) : size(k)
     {
-        size = k;
-        groups = new Node<T> *[k];
-        mainGroup = T(0);
+        parents = new int[k + 1];
+        groups = new shared_ptr<Group>[k + 1];
+        groups[0] = make_shared<Group>(0);
+        parents[0] = 0;
         for (int i = 1; i <= k; i++)
         {
-            T group = T(i);
-            groups[i] = new Node<T>(i, group);
+            parents[i] = i;
+            groups[i] = make_shared<Group>(i);
         }
     }
-    UnionFind(const UnionFind<T> &) = default;
-    UnionFind &operator=(const UnionFind<T> &) = default;
+    UnionFind(const UnionFind &) = default;
+    UnionFind &operator=(const UnionFind &) = default;
     ~UnionFind() = default;
     int GetSize()
     {
         return (this != 0) ? this->size : -1;
     }
-    T GetMainGroup()
+    shared_ptr<Group> GetMainGroup()
     {
-        return this->mainGroup;
+        return this->groups[0];
     }
-    T Find(int i)
+    shared_ptr<Group> Find(int i)
     {
         if (i < 1 || size < i)
-            throw std::exception(); // maybe our own exception
-        Node<T> *root = groups[i];
-        while (root->GetParent() != nullptr)
-            root = root->GetParent();
-        Node<T> *temp = groups[i];
-        while (temp->GetParent() != nullptr)
+            return nullptr;
+        int parent = parents[i];
+        while (parents[parent] != parent)
+            parent = parents[parent];
+        int former_parent = parents[i];
+        while (parents[former_parent] != former_parent)
         {
-            Node<T> *t = temp;
-            temp = temp->GetParent();
-            t->SetParent(root);
-            t->SetTreeSize(root->GetTreeSize());
+            int temp = former_parent;
+            former_parent = parents[former_parent];
+            parents[temp] = parent;
         }
-        return root->GetData();
+        return groups[parent];
     }
 
-    T Union(int i, int j)
+    shared_ptr<Group> Union(int i, int j)
     {
         if ((i < 1 || size < i) || (j < 1 || size < j))
-            throw std::exception(); // maybe our own exception
-        Node<T> *root_i = groups[i], *root_j = groups[j];
-        while (root_i->GetParent() != nullptr)
-            root_i = root_i->GetParent();
-        while (root_j->GetParent() != nullptr)
-            root_j = root_j->GetParent();
-        if (root_i == root_j)
-            throw std::exception(); // maybe our own exception
-        T t;                        //haha titty (.)(.)
-        int i_size = root_i->GetTreeSize(), j_size = root_j->GetTreeSize(), new_size = i_size + j_size;
-        if (i_size >= j_size)
+            return nullptr;
+        int parent_i = parents[i], parent_j = parents[j];
+        while (parents[parent_i] != parent_i)
+            parent_i = parents[parent_i];
+        while (parents[parent_j] != parent_j)
+            parent_j = parents[parent_j];
+        if (parent_i == parent_j)
+            return groups[parent_i];
+        int parent_of_union = parent_i;
+        if (groups[parent_i].get()->GetSize() >= groups[parent_j].get()->GetSize())
         {
-            root_j->SetParent(root_i);
-            t = root_i->GetData();
+            parents[parent_j] = parent_i;
+            
         }
         else
         {
-            root_i->SetParent(root_j);
-            t = root_j->GetData();
+            parent_of_union = parent_j;
+            parents[parent_i] = parent_j;
         }
-        root_i->SetTreeSize(new_size);
-        root_j->SetTreeSize(new_size);
-        return t;
+        return groups[parent_of_union];
     }
 };
 

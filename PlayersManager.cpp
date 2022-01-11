@@ -1,8 +1,10 @@
 #include "PlayersManager.h"
 
-PlayersManager::PlayersManager(int k, int scale) : numOfGroups(k), maxScore(scale)
+PlayersManager::PlayersManager(int k, int scale)
 {
-    groups = UnionFind<shared_ptr<Group>>(k);
+    numOfGroups = k;
+    maxScore = scale;
+    groups = UnionFind(k);
     playersbyid = HashTable<shared_ptr<Player>>();
 }
 

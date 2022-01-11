@@ -22,13 +22,12 @@ StatusType MergeGroups(void *DS, int GroupID1, int GroupID2)
         return INVALID_INPUT;
     try
     {
-        /* code */
+        return ((PlayersManager *)DS)->MergeGroups(GroupID1, GroupID2);
     }
     catch(const std::exception& e)
     {
         return ALLOCATION_ERROR;
     }
-    
 }
 
 StatusType AddPlayer(void *DS, int PlayerID, int GroupID, int score)

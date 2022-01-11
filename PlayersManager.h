@@ -8,7 +8,6 @@
 #include "Group.h"
 #include "Player.h"
 
-template<typename T>
 class UnionFind;
 template <typename T>
 class AVLTree;
@@ -20,7 +19,7 @@ class Player;
 
 class PlayersManager
 {
-    UnionFind<shared_ptr<Group>> groups;
+    UnionFind groups;
     HashTable<shared_ptr<Player>> playersbyid;
     int numOfGroups;
     int maxScore;
