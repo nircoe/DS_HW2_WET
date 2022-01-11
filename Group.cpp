@@ -32,6 +32,10 @@ int Group::GetSize()
 {
     return (this != 0) ? this->group_size : -1;
 }
+void Group::SetSize(int new_size)
+{
+    this->group_size = new_size;
+}
 StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
 {
     int p_level = p.get()->GetLevel();
@@ -131,12 +135,14 @@ shared_ptr<Player> *Group::GetAllPlayersInArray()
 }
 
 void Group::MergeWith(Group *sub)
-{
+{ 
     for (int i = 0; i <= scale; i++)
     {
         int n1 = this->players[i].GetTreeSize(),
             n2 = sub->players[i].GetTreeSize(),
             i1 = 0, i2 = 0, j = 0;
+        if(n1 + n2 == 0)
+            continue;
         int *keys1 = this->players[i].GetKeysArray(),
             *keys2 = sub->players[i].GetKeysArray(),
             *merged_keys = new int[n1 + n2];
@@ -183,7 +189,7 @@ void Group::MergeWith(Group *sub)
             j++;
         }
         AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> *merged_tree =
-            new AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>>(merged_keys, merged_data, n1 + n2);
+            new AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>>(merged_keys, merged_data, j);
         delete[] keys1;
         delete[] keys2;
         delete[] data1;
@@ -194,7 +200,7 @@ void Group::MergeWith(Group *sub)
         //! I hope this won`t cause problems:
         this->players[i] = *merged_tree;
     }
-    delete sub;
+    //delete sub;
 }
 
 Group::~Group()

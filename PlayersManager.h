@@ -19,8 +19,8 @@ class Player;
 
 class PlayersManager
 {
-    UnionFind groups;
-    HashTable<shared_ptr<Player>> playersbyid;
+    UnionFind *groups;
+    HashTable<shared_ptr<Player>> *playersbyid;
     int numOfGroups;
     int maxScore;
     ~PlayersManager();
