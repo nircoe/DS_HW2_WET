@@ -3,8 +3,9 @@
 #include "AVLExceptions.h"
 #include "library2.h"
 #include <memory>
-// using std::make_shared;
-// using std::shared_ptr;
+#include <functional>
+using std::cout;
+using std::endl;
 
 template <typename T>
 class AVLNode;
@@ -77,6 +78,11 @@ class AVLNode
         this->height = 1 + GetMax(this->GetLeft()->GetHeight(), this->GetRight()->GetHeight());
         this->counter = players + this->GetLeft()->GetCounter() + this->GetRight()->GetCounter();
         this->sum = this->GetPlayers() * this->GetKey() + this->GetLeft()->GetSum() + this->GetRight()->GetSum();
+    }
+    friend std::ostream &operator<<(std::ostream &os, const AVLNode &nd)
+    {
+        os << "{" << nd.data << "}(" << nd.key << ")";
+        return os;
     }
     //void ClearNode() { right = left = parent = nullptr; }
 
@@ -388,6 +394,38 @@ private:
         UpdateAllRankes(current->right);
         current->updateNode();
     }
+    void PostOrderApply_aux(AVLNode<T> *current, std::function<void(T)> func)
+    {
+        if (current == nullptr)
+            return;
+        PostOrderApply_aux(current->left, func);
+        PostOrderApply_aux(current->right, func);
+        func(current->data);
+    }
+    void InOrderApply_aux(AVLNode<T> *current, std::function<void(T)> func)
+    {
+        if (current == nullptr)
+            return;
+        InOrderApply_aux(current->left, func);
+        func(current->data);
+        InOrderApply_aux(current->right, func);
+    }
+    void PreOrderApply_aux(AVLNode<T> *current, std::function<void(T)> func)
+    {
+        if (current == nullptr)
+            return;
+        func(current->data);
+        PreOrderApply_aux(current->left, func);
+        PreOrderApply_aux(current->right, func);
+    }
+    void Print_aux(AVLNode<T> *current)
+    {
+        if (current == nullptr)
+            return;
+        Print_aux(current->left);
+        cout << *current << "  ";
+        Print_aux(current->right);
+    }
 
 public:
     AVLTree() : root(nullptr), highest(nullptr), lowest(nullptr), size(0) {}
@@ -560,8 +598,8 @@ public:
     }
     void Print()
     {
-        print_tree(root);
-        std::cout << "" << std::endl;
+        Print_aux(root);
+        std::cout << std::endl;
     }
     T *GetDataArray()
     {
@@ -576,6 +614,18 @@ public:
         int *array = new int[size];
         GetKeysArray_AUX(root, array, &index);
         return array;
+    }
+    void PostOrderApply(std::function<void(T)> func)
+    {
+        PostOrderApply_aux(root, func);
+    }
+    void InOrderApply(std::function<void(T)> func)
+    {
+        InOrderApply_aux(root, func);
+    }
+    void PreOrderApply(std::function<void(T)> func)
+    {
+        PreOrderApply_aux(root, func);
     }
     friend class Group;
     friend class Player;
@@ -769,7 +819,7 @@ StatusType AverageHighest(AVLTree<type> tree, int m, double *avgLevel)
                 *avgLevel = (double)(sum + node->GetRight()->GetSum() + (node->GetPlayers() * node->GetKey())) / (double)(m);
                 return SUCCESS;
             }
-            else if(num + node->GetRight()->GetCounter() + node->GetPlayers() < m) // go left
+            else if (num + node->GetRight()->GetCounter() + node->GetPlayers() < m) // go left
             {
                 sum += (double)(node->GetRight()->GetSum() + (node->GetPlayers() * node->GetKey()));
                 num += node->GetPlayers() + node->GetRight()->GetCounter();
@@ -792,13 +842,13 @@ StatusType AverageHighest(AVLTree<type> tree, int m, double *avgLevel)
         }
         else // no right
         {
-            if(num + node->GetPlayers() == m) // found
+            if (num + node->GetPlayers() == m) // found
             {
                 sum += (double)(node->GetPlayers() * node->GetKey());
                 *avgLevel = sum / (double)(m);
                 return SUCCESS;
             }
-            else if(num + node->GetPlayers() < m) // go left
+            else if (num + node->GetPlayers() < m) // go left
             {
                 sum += (double)(node->GetPlayers() * node->GetKey());
                 num += node->GetPlayers();
@@ -814,7 +864,7 @@ StatusType AverageHighest(AVLTree<type> tree, int m, double *avgLevel)
         }
     }
     // not supposed to get here :
-    if(num != m)
+    if (num != m)
         return FAILURE;
     *avgLevel = sum / (double)(m); // if accedently got here and num == n
     return SUCCESS;

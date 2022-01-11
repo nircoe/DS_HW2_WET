@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "ostream": "cpp",
-        "memory": "cpp"
+        "memory": "cpp",
+        "iostream": "cpp"
     },
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "[cpp]": {

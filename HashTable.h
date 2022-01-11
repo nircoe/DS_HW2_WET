@@ -196,7 +196,7 @@ public:
     }
     int GetSize()
     {
-        return (this != 0) size : -1;
+        return (this != 0) ? size : -1;
     }
 };
 
