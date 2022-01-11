@@ -714,6 +714,7 @@ void RTLInOrderForPlayers(AVLNode<type> *node, int **array, int *index) // right
     LTRInOrderForPlayers(node->GetData().get()->GetRoot(), array, index);
     RTLInOrderForPlayers(node->GetLeft(), array, index);
 }
+/*
 template <typename type>
 AVLTree<type> *MergeTrees(AVLTree<type> &tr1, AVLTree<type> &tr2)
 {
@@ -765,7 +766,7 @@ AVLTree<type> *MergeTrees(AVLTree<type> &tr1, AVLTree<type> &tr2)
     merged_tree->UpdateAllRankes(merged_tree->root);
     return merged_tree;
 }
-
+*/
 template <typename type>
 double GetNumOfPlayersInBound(AVLTree<type> tree, int lowerLevel, int higherLevel)
 {

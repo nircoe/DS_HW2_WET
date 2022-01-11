@@ -3,17 +3,17 @@
 #include <memory>
 using std::make_shared;
 using std::shared_ptr;
-
-const int MAX_SCALE = 200;
 /*
     StatusType AddPlayerToGroup(shared_ptr<Player> p);
     StatusType RemovePlayerFromGroup(int p_id, int p_level);
     StatusType RemovePlayerFromGroupWithoutDelete(Player *p);
 */
-Group::Group(int g_id) : group_id(g_id), group_size(0)
+Group::Group(int g_id, int scale) : group_id(g_id), scale(scale), group_size(0)
 {
-    players = new AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>>[MAX_SCALE + 1];
-    for (int i = 0; i <= MAX_SCALE; i++)
+    if (scale > MAX_SCALE)
+        throw FAILURE;
+    players = new AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>>[scale + 1];
+    for (int i = 0; i <= scale; i++)
     {
         players[i] = AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>>();
     }
@@ -88,7 +88,7 @@ StatusType Group::GetPercentOfPlayersWithScoreInBounds(int score, int lowerLevel
     total_players_in_bound = GetNumOfPlayersInBound<shared_ptr<HashTable<shared_ptr<Player>>>>(this->players[0], lowerLevel, higherLevel);
     if (total_players_in_bound == 0)
         return FAILURE;
-    if (score < 1 || MAX_SCALE < score)
+    if (score < 1 || scale < score)
         total_players_with_score_in_bound = 0;
     else
         total_players_with_score_in_bound = GetNumOfPlayersInBound<shared_ptr<HashTable<shared_ptr<Player>>>>(this->players[score], lowerLevel, higherLevel);
@@ -127,17 +127,21 @@ shared_ptr<Player> *Group::GetAllPlayersInArray()
     }
     return all_players;
 }
-StatusType Group::MergeWith(Group *subgroup)
-{
-    for (int i = 0; i <= MAX_SCALE; i++)
-    {
 
-        int n1 = this->players->GetTreeSize(), n2 = subgroup->players->GetTreeSize();
-        int *keys1 = this->players->GetKeysArray(), *keys2 = subgroup->players->GetKeysArray();
-        Player *data1 = this->players->GetDataArray(), *data2 = subgroup->players->GetDataArray();
-        int i1 = 0, i2 = 0, j = 0;
-        type *merged_data = new type[n1 + n2];
-        int *merged_keys = new int[n1 + n2];
+void Group::MergeWith(Group *sub)
+{
+    for (int i = 0; i <= scale; i++)
+    {
+        int n1 = this->players[i].GetTreeSize(),
+            n2 = sub->players[i].GetTreeSize(),
+            i1 = 0, i2 = 0, j = 0;
+        int *keys1 = this->players[i].GetKeysArray(),
+            *keys2 = sub->players[i].GetKeysArray(),
+            *merged_keys = new int[n1 + n2];
+        shared_ptr<HashTable<shared_ptr<Player>>> *data1 = this->players[i].GetDataArray(),
+                                                  *data2 = sub->players[i].GetDataArray(),
+                                                  *merged_data = new shared_ptr<HashTable<shared_ptr<Player>>>[n1 + n2];
+        //* merging hashtables by each level:
         while (i1 < n1 && i2 < n2)
         {
             if (keys1[i1] < keys2[i2])
@@ -152,8 +156,14 @@ StatusType Group::MergeWith(Group *subgroup)
                 merged_keys[j] = keys2[i2];
                 i2++;
             }
-            else //found duplicate key!
-                throw FAILURE_exception();
+            else
+            {
+                data1[i1].get()->MergeWith(data2[i2].get());
+                merged_data[j] = data1[i1];
+                merged_keys[j] = keys1[i1];
+                i1++;
+                i2++;
+            }
             j++;
         }
         while (i1 < n1)
@@ -170,7 +180,8 @@ StatusType Group::MergeWith(Group *subgroup)
             i2++;
             j++;
         }
-        AVLTree<type> *merged_tree = new AVLTree<type>(merged_keys, merged_data, n1 + n2);
+        AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> *merged_tree =
+            new AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>>(merged_keys, merged_data, n1 + n2);
         delete[] keys1;
         delete[] keys2;
         delete[] data1;
@@ -178,7 +189,8 @@ StatusType Group::MergeWith(Group *subgroup)
         delete[] merged_data;
         delete[] merged_keys;
         merged_tree->UpdateAllRankes(merged_tree->root);
-        return merged_tree;
+        //! I hope this won`t cause problems:
+        this->players[i] = *merged_tree;
     }
 }
 

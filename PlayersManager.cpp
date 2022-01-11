@@ -14,38 +14,17 @@ PlayersManager::~PlayersManager()
     playersbyid.~HashTable();
 }
 
-//TODO: fix ranks and add players to other group
 StatusType PlayersManager::MergeGroups(int GroupID1, int GroupID2)
 {
-    if (GroupID1 > numOfGroups || GroupID2 > numOfGroups ||
-        GroupID1 <= 0 || GroupID2 <= 0)
-        return INVALID_INPUT;
-
-    //TODO: need to complete
-    Group *g1 = groups.Find(GroupID1).get();
-    Group *g2 = groups.Find(GroupID2).get();
-    Group *main_g, *sub_g;
-    int n1 = g1->GetSize();
-    int n2 = g2->GetSize();
-    int sub_n;
+    Group *g1 = groups.Find(GroupID1).get(),
+          *g2 = groups.Find(GroupID2).get();
+    int n1 = g1->GetSize(),
+        n2 = g2->GetSize();
     if (n1 > n2)
-    {
-        main_g = g1;
-        sub_g = g2;
-        sub_n = n2;
-    }
+        g1->MergeWith(g2);
     else
-    {
-        main_g = g2;
-        sub_g = g1;
-        sub_n = n1;
-    }
-    std::shared_ptr<Player> *players_in_sub = sub_g->GetAllPlayersInArray();
-    for (int i = 0; i < sub_n; i++)
-        players_in_sub[i].get()->SetGroup(main_g->GetId());
-
+        g2->MergeWith(g1);
     groups.Union(GroupID1, GroupID2);
-
     return SUCCESS;
 }
 StatusType PlayersManager::AddPlayer(int PlayerID, int GroupID, int score)
