@@ -15,16 +15,16 @@ class UnionFind
 
 public:
     UnionFind() : parents(nullptr), groups(nullptr), size(-1){};
-    UnionFind(int k) : size(k)
+    UnionFind(int k, int scale) : size(k)
     {
         parents = new int[k + 1];
         groups = new shared_ptr<Group>[k + 1];
-        groups[0] = make_shared<Group>(0);
+        groups[0] = make_shared<Group>(0, scale);
         parents[0] = 0;
         for (int i = 1; i <= k; i++)
         {
             parents[i] = i;
-            groups[i] = make_shared<Group>(i);
+            groups[i] = make_shared<Group>(i, scale);
         }
     }
     UnionFind(const UnionFind &) = default;
@@ -46,11 +46,13 @@ public:
         while (parents[parent] != parent)
             parent = parents[parent];
         int former_parent = parents[i];
+        shared_ptr<Group> group = groups[parent];
         while (parents[former_parent] != former_parent)
         {
             int temp = former_parent;
             former_parent = parents[former_parent];
             parents[temp] = parent;
+            groups[temp] = group;
         }
         return groups[parent];
     }
@@ -70,12 +72,17 @@ public:
         if (groups[parent_i].get()->GetSize() >= groups[parent_j].get()->GetSize())
         {
             parents[parent_j] = parent_i;
-            
+            shared_ptr<Group> main_group = groups[parent_of_union], sub_group = groups[parent_j];
+            main_group.get()->MergeWith(sub_group.get());
+            groups[parent_j] = main_group;
         }
         else
         {
             parent_of_union = parent_j;
             parents[parent_i] = parent_j;
+            shared_ptr<Group> main_group = groups[parent_of_union], sub_group = groups[parent_i];
+            main_group.get()->MergeWith(sub_group.get());
+            groups[parent_i] = main_group;
         }
         return groups[parent_of_union];
     }

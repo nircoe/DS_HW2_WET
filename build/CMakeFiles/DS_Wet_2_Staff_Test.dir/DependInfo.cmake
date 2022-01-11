@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/nircoe/Desktop/DS_HW2_WET/Player.cpp" "/home/nircoe/Desktop/DS_HW2_WET/build/CMakeFiles/DS_Wet_2_Staff_Test.dir/Player.cpp.o"
   "/home/nircoe/Desktop/DS_HW2_WET/PlayersManager.cpp" "/home/nircoe/Desktop/DS_HW2_WET/build/CMakeFiles/DS_Wet_2_Staff_Test.dir/PlayersManager.cpp.o"
   "/home/nircoe/Desktop/DS_HW2_WET/library2.cpp" "/home/nircoe/Desktop/DS_HW2_WET/build/CMakeFiles/DS_Wet_2_Staff_Test.dir/library2.cpp.o"
-  "/home/nircoe/Desktop/DS_HW2_WET/main2.cpp" "/home/nircoe/Desktop/DS_HW2_WET/build/CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.o"
+  "/home/nircoe/Desktop/DS_HW2_WET/ownTest.cpp" "/home/nircoe/Desktop/DS_HW2_WET/build/CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

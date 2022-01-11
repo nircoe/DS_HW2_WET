@@ -1,0 +1,10 @@
+Init done.
+AddPlayer: ALLOCATION_ERROR
+AddPlayer: SUCCESS
+AddPlayer: INVALID_INPUT
+AddPlayer: SUCCESS
+AddPlayer: ALLOCATION_ERROR
+AddPlayer: ALLOCATION_ERROR
+IncreasePlayerIDLevel: FAILURE
+IncreasePlayerIDLevel: FAILURE
+ChangePlayerIDScore: FAILURE

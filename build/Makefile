@@ -253,32 +253,32 @@ library2.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/DS_Wet_2_Staff_Test.dir/build.make CMakeFiles/DS_Wet_2_Staff_Test.dir/library2.cpp.s
 .PHONY : library2.cpp.s
 
-main2.o: main2.cpp.o
+ownTest.o: ownTest.cpp.o
 
-.PHONY : main2.o
+.PHONY : ownTest.o
 
 # target to build an object file
-main2.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DS_Wet_2_Staff_Test.dir/build.make CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.o
-.PHONY : main2.cpp.o
+ownTest.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DS_Wet_2_Staff_Test.dir/build.make CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o
+.PHONY : ownTest.cpp.o
 
-main2.i: main2.cpp.i
+ownTest.i: ownTest.cpp.i
 
-.PHONY : main2.i
+.PHONY : ownTest.i
 
 # target to preprocess a source file
-main2.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DS_Wet_2_Staff_Test.dir/build.make CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.i
-.PHONY : main2.cpp.i
+ownTest.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DS_Wet_2_Staff_Test.dir/build.make CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.i
+.PHONY : ownTest.cpp.i
 
-main2.s: main2.cpp.s
+ownTest.s: ownTest.cpp.s
 
-.PHONY : main2.s
+.PHONY : ownTest.s
 
 # target to generate assembly for a file
-main2.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DS_Wet_2_Staff_Test.dir/build.make CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.s
-.PHONY : main2.cpp.s
+ownTest.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DS_Wet_2_Staff_Test.dir/build.make CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.s
+.PHONY : ownTest.cpp.s
 
 # Help Target
 help:
@@ -301,9 +301,9 @@ help:
 	@echo "... library2.o"
 	@echo "... library2.i"
 	@echo "... library2.s"
-	@echo "... main2.o"
-	@echo "... main2.i"
-	@echo "... main2.s"
+	@echo "... ownTest.o"
+	@echo "... ownTest.i"
+	@echo "... ownTest.s"
 .PHONY : help
 
 

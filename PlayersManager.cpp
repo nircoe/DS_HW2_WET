@@ -4,7 +4,7 @@ PlayersManager::PlayersManager(int k, int scale)
 {
     numOfGroups = k;
     maxScore = scale;
-    groups = UnionFind(k);
+    groups = UnionFind(k, scale);
     playersbyid = HashTable<shared_ptr<Player>>();
 }
 
@@ -16,15 +16,10 @@ PlayersManager::~PlayersManager()
 
 StatusType PlayersManager::MergeGroups(int GroupID1, int GroupID2)
 {
-    Group *g1 = groups.Find(GroupID1).get(),
-          *g2 = groups.Find(GroupID2).get();
-    int n1 = g1->GetSize(),
-        n2 = g2->GetSize();
-    if (n1 > n2)
-        g1->MergeWith(g2);
-    else
-        g2->MergeWith(g1);
-    groups.Union(GroupID1, GroupID2);
+    if(GroupID1 > numOfGroups || GroupID2 > numOfGroups)
+        return INVALID_INPUT;
+    if(groups.Union(GroupID1, GroupID2) == nullptr)
+        return FAILURE;
     return SUCCESS;
 }
 StatusType PlayersManager::AddPlayer(int PlayerID, int GroupID, int score)

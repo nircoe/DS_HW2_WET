@@ -20,14 +20,6 @@ memory
 functional
 -
 
-/home/nircoe/Desktop/DS_HW2_WET/Group.cpp
-Group.h
-/home/nircoe/Desktop/DS_HW2_WET/Group.h
-AVLTree.h
-/home/nircoe/Desktop/DS_HW2_WET/AVLTree.h
-memory
--
-
 /home/nircoe/Desktop/DS_HW2_WET/Group.h
 memory
 -
@@ -44,17 +36,9 @@ library2.h
 iostream
 -
 
-/home/nircoe/Desktop/DS_HW2_WET/Player.cpp
-Player.h
-/home/nircoe/Desktop/DS_HW2_WET/Player.h
-
 /home/nircoe/Desktop/DS_HW2_WET/Player.h
 Group.h
 /home/nircoe/Desktop/DS_HW2_WET/Group.h
-
-/home/nircoe/Desktop/DS_HW2_WET/PlayersManager.cpp
-PlayersManager.h
-/home/nircoe/Desktop/DS_HW2_WET/PlayersManager.h
 
 /home/nircoe/Desktop/DS_HW2_WET/PlayersManager.h
 library2.h
@@ -76,11 +60,11 @@ memory
 Group.h
 /home/nircoe/Desktop/DS_HW2_WET/Group.h
 
-/home/nircoe/Desktop/DS_HW2_WET/library2.cpp
-library2.h
 /home/nircoe/Desktop/DS_HW2_WET/library2.h
+
+/home/nircoe/Desktop/DS_HW2_WET/ownTest.cpp
 PlayersManager.h
 /home/nircoe/Desktop/DS_HW2_WET/PlayersManager.h
-
+library2.h
 /home/nircoe/Desktop/DS_HW2_WET/library2.h
 

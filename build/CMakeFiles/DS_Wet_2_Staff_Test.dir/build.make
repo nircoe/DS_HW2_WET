@@ -79,18 +79,18 @@ include CMakeFiles/DS_Wet_2_Staff_Test.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/DS_Wet_2_Staff_Test.dir/flags.make
 
-CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.o: CMakeFiles/DS_Wet_2_Staff_Test.dir/flags.make
-CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.o: ../main2.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/nircoe/Desktop/DS_HW2_WET/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.o -c /home/nircoe/Desktop/DS_HW2_WET/main2.cpp
+CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o: CMakeFiles/DS_Wet_2_Staff_Test.dir/flags.make
+CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o: ../ownTest.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/nircoe/Desktop/DS_HW2_WET/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o -c /home/nircoe/Desktop/DS_HW2_WET/ownTest.cpp
 
-CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/nircoe/Desktop/DS_HW2_WET/main2.cpp > CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.i
+CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/nircoe/Desktop/DS_HW2_WET/ownTest.cpp > CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.i
 
-CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/nircoe/Desktop/DS_HW2_WET/main2.cpp -o CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.s
+CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/nircoe/Desktop/DS_HW2_WET/ownTest.cpp -o CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.s
 
 CMakeFiles/DS_Wet_2_Staff_Test.dir/library2.cpp.o: CMakeFiles/DS_Wet_2_Staff_Test.dir/flags.make
 CMakeFiles/DS_Wet_2_Staff_Test.dir/library2.cpp.o: ../library2.cpp
@@ -146,7 +146,7 @@ CMakeFiles/DS_Wet_2_Staff_Test.dir/Player.cpp.s: cmake_force
 
 # Object files for target DS_Wet_2_Staff_Test
 DS_Wet_2_Staff_Test_OBJECTS = \
-"CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.o" \
+"CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o" \
 "CMakeFiles/DS_Wet_2_Staff_Test.dir/library2.cpp.o" \
 "CMakeFiles/DS_Wet_2_Staff_Test.dir/PlayersManager.cpp.o" \
 "CMakeFiles/DS_Wet_2_Staff_Test.dir/Group.cpp.o" \
@@ -155,7 +155,7 @@ DS_Wet_2_Staff_Test_OBJECTS = \
 # External object files for target DS_Wet_2_Staff_Test
 DS_Wet_2_Staff_Test_EXTERNAL_OBJECTS =
 
-DS_Wet_2_Staff_Test: CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.o
+DS_Wet_2_Staff_Test: CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o
 DS_Wet_2_Staff_Test: CMakeFiles/DS_Wet_2_Staff_Test.dir/library2.cpp.o
 DS_Wet_2_Staff_Test: CMakeFiles/DS_Wet_2_Staff_Test.dir/PlayersManager.cpp.o
 DS_Wet_2_Staff_Test: CMakeFiles/DS_Wet_2_Staff_Test.dir/Group.cpp.o

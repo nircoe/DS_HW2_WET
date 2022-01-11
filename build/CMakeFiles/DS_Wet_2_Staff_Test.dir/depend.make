@@ -37,6 +37,13 @@ CMakeFiles/DS_Wet_2_Staff_Test.dir/library2.cpp.o: ../UnionFind.h
 CMakeFiles/DS_Wet_2_Staff_Test.dir/library2.cpp.o: ../library2.cpp
 CMakeFiles/DS_Wet_2_Staff_Test.dir/library2.cpp.o: ../library2.h
 
-CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.o: ../library2.h
-CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.o: ../main2.cpp
+CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o: ../AVLExceptions.h
+CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o: ../AVLTree.h
+CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o: ../Group.h
+CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o: ../HashTable.h
+CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o: ../Player.h
+CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o: ../PlayersManager.h
+CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o: ../UnionFind.h
+CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o: ../library2.h
+CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o: ../ownTest.cpp
 

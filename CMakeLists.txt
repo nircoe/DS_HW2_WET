@@ -18,6 +18,6 @@ set(CMAKE_CPP_FLAGS ${DS_FLAGS_DEBUG})
 
 
 # Add the names of your source files here
-set(CPP_FILES ./main2.cpp ./library2.cpp ./PlayersManager.cpp ./Group.cpp ./Player.cpp)
+set(CPP_FILES ./ownTest.cpp ./library2.cpp ./PlayersManager.cpp ./Group.cpp ./Player.cpp)
 
 add_executable(DS_Wet_2_Staff_Test ${CPP_FILES})

@@ -98,7 +98,7 @@ class HashTable
     }
 
 public:
-    HashTable(int k = 2) : K(k), size(0)
+    HashTable(int k = 2) : size(0), K(k)
     {
         InitArr(K);
     }

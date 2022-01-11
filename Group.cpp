@@ -8,7 +8,7 @@ using std::shared_ptr;
     StatusType RemovePlayerFromGroup(int p_id, int p_level);
     StatusType RemovePlayerFromGroupWithoutDelete(Player *p);
 */
-Group::Group(int g_id, int scale) : group_id(g_id), scale(scale), group_size(0)
+Group::Group(int g_id, int scale) : group_id(g_id), group_size(0), scale(scale)
 {
     if (scale > MAX_SCALE)
         throw FAILURE;
@@ -192,6 +192,7 @@ void Group::MergeWith(Group *sub)
         //! I hope this won`t cause problems:
         this->players[i] = *merged_tree;
     }
+    delete sub;
 }
 
 Group::~Group()
