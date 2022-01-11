@@ -7,8 +7,10 @@ int main()
     pm->AddPlayer(10, 1, 2);
     pm->AddPlayer(11, 2, 3);
     pm->AddPlayer(9, 0, 2);
+    cout << "HI" << endl;
     pm->AddPlayer(7, 1, 5);
     pm->AddPlayer(12, 1, 4);
+    
     pm->AddPlayer(20, 1, 5);
     pm->IncreasePlayerIDLevel(10, 2);
     pm->IncreasePlayerIDLevel(12, 3);
