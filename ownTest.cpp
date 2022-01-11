@@ -37,13 +37,10 @@ int main()
     //    return 0;
     if(pm->MergeGroups(1, 2) != SUCCESS)
         return 0;
-<<<<<<< HEAD
     pm->printgroup1();
     if(pm->RemovePlayer(20) != SUCCESS)
-=======
-    if (pm->RemovePlayer(20) != SUCCESS)
->>>>>>> 93e0091bc452913777955c385e0edac249c7096a
         return 0;
+    pm->printgroup1();
     double avgLevel = 0;
     pm->AverageHighestPlayerLevelByGroup(2, 3, &avgLevel);
     if (avgLevel != 1.67)

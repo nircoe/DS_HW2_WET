@@ -295,14 +295,23 @@ private:
                 AVLNode<T> *current_left = current->GetLeft();
                 if (current_left == replacement)
                 {
-                    replacement->SetParent(parent);
-                    current->SetParent(replacement);
-                    current->SetLeft(rep_son);
-                    current->SetRight(nullptr);
-                    rep_son->SetParent(current);
-                    replacement->SetLeft(current);
-                    replacement->SetRight(current_right);
-                    current_right->SetParent(replacement);
+                    if(replacement)
+                        replacement->SetParent(parent);
+                    if(current)
+                    {
+                        current->SetParent(replacement);
+                        current->SetLeft(rep_son);
+                        current->SetRight(nullptr);
+                    }
+                    if(rep_son)
+                        rep_son->SetParent(current);
+                    if(replacement)
+                    {
+                        replacement->SetLeft(current);
+                        replacement->SetRight(current_right);
+                    }
+                    if(current_right)
+                        current_right->SetParent(replacement);
                     if (parent)
                         parent->GetLeft() == current ? parent->SetLeft(replacement) : parent->SetRight(replacement);
                 }
@@ -644,21 +653,23 @@ public:
             //type lower_data = type();
             if (this->Insert(lowerLevel, 0) != true)
                 throw std::exception();
+            lower = this->Find_aux(root, lowerLevel);
             lower_added = true;
-    }
-    if (higher == nullptr)
-    {
+        }
+        if (higher == nullptr)
+        {
         //type higher_data = type();
         if (this->Insert(higherLevel, 0) != true)
             throw std::exception();
+        higher = this->Find_aux(root, higherLevel);
         higher_added = true;
-    }
-    double all_players = (double)(root->GetCounter());
-    double lower_then_higherLevel_players = (higher->GetRight() == nullptr) ? all_players : all_players - (double)(higher->GetRight()->GetCounter());
-    double lower_then_lowerLevel_players = (lower->GetLeft() == nullptr) ? 0 : (double)(lower->GetLeft()->GetCounter());
-    if (lower_added && this->Remove(lowerLevel) != true)
-        throw std::exception();
-    if (higher_added && this->Remove(higherLevel) != true)
+        }
+        double all_players = (double)(root->GetCounter());
+        double lower_then_higherLevel_players = (higher->GetRight() == nullptr) ? all_players : all_players - (double)(higher->GetRight()->GetCounter());
+        double lower_then_lowerLevel_players = (lower->GetLeft() == nullptr) ? 0 : (double)(lower->GetLeft()->GetCounter());
+        if (lower_added && this->Remove(lowerLevel) != true)
+            throw std::exception();
+        if (higher_added && this->Remove(higherLevel) != true)
         throw std::exception();
 
     return lower_then_higherLevel_players - lower_then_lowerLevel_players;
