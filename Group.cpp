@@ -4,6 +4,9 @@
 using std::make_shared;
 using std::shared_ptr;
 
+class AVLNode;
+class AVLTree;
+
 Group::Group(int g_id, int scale) : group_id(g_id), group_size(0), scale(scale)
 {
     if (scale > MAX_SCALE)
@@ -13,6 +16,7 @@ Group::Group(int g_id, int scale) : group_id(g_id), group_size(0), scale(scale)
     for (int i = 0; i <= scale; i++)
     {
         levelsinscorei[i] = AVLTree();
+        levelsinscorei[i].Insert(0);
     }
 }
 
@@ -109,7 +113,7 @@ std::ostream &operator<<(std::ostream &os, const Group &g)
         g.levelsinscorei[0].printTree(os);
         for (int i = 1; i <= g.scale; i++)
         {
-            if (g.levelsinscorei[i].GetTreeSize() > 0)
+            if (g.levelsinscorei[i].GetTreeSize() > 0 && !(g.levelsinscorei[i].checkIfEmpty()))
             {
                 os << std::endl
                    << "Score " << i << " Players Levels" << std::endl;
@@ -125,7 +129,7 @@ StatusType Group::GetPercentOfPlayersWithScoreInBounds(int score, int lowerLevel
 {
     int total_players_in_bound, total_players_with_score_in_bound;
     total_players_in_bound = this->levelsinscorei[0].GetNumOfPlayersInBound(lowerLevel, higherLevel);
-    if (total_players_in_bound == 0)
+    if (total_players_in_bound <= 0)
         return FAILURE;
     if (score < 1 || scale < score)
         total_players_with_score_in_bound = 0;
@@ -215,7 +219,6 @@ void Group::MergeWith(Group *sub)
         delete[] merged_players;
         delete[] merged_keys;
         merged_tree.UpdateAllRankes(merged_tree.GetRoot());
-        //! I hope this won`t cause problems:
         this->levelsinscorei[i] = merged_tree;
     }
     shared_ptr<Player> *players = sub->GetPlayersByID()->GetDataArray();
@@ -224,13 +227,10 @@ void Group::MergeWith(Group *sub)
         players[i].get()->SetGroup(this->GetId());
     this->playersbyid->MergeWith(sub->playersbyid);
     delete[] players;
-    //delete sub;
 }
 
 Group::~Group()
 {
-    //* Should work, players is an array.
-    //DeleteSharedPtrPlayerHashTable<shared_ptr<Player>>(playersbyid);
     delete playersbyid;
     delete[] levelsinscorei;
 }

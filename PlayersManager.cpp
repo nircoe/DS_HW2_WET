@@ -107,7 +107,7 @@ void PlayersManager::Quit(PlayersManager *pm)
     delete pm;
 }
 
-void PlayersManager::printallgroups()
+/*void PlayersManager::printallgroups()
 {
     cout << *(groups->GetMainGroup()) << std::endl;
     for (int i = 1; i <= numOfGroups;i++)
@@ -115,4 +115,4 @@ void PlayersManager::printallgroups()
         cout << *(groups->Find(i)) << std::endl;
     }
     cout << "End Print" << std::endl << std::endl;
-}
+}*/

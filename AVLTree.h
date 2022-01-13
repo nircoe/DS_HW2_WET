@@ -4,7 +4,6 @@
 #include "library2.h"
 #include "Group.h"
 #include <memory>
-#include <functional>
 using std::cout;
 using std::endl;
 
@@ -61,8 +60,6 @@ class AVLNode
         os << "(" << nd.key << ")";
         return os;
     }
-    //void ClearNode() { right = left = parent = nullptr; }
-
     friend class AVLTree;
     friend class Group;
 };
@@ -360,31 +357,7 @@ private:
         UpdateAllRankes(current->left);
         UpdateAllRankes(current->right);
         current->updateNode();
-    }/*
-    void PostOrderApply_aux(AVLNode *current, std::function<void()> func)
-    {
-        if (current == nullptr)
-            return;
-        PostOrderApply_aux(current->left, func);
-        PostOrderApply_aux(current->right, func);
-        func(current->data);
     }
-    void InOrderApply_aux(AVLNode *current, std::function<void()> func)
-    {
-        if (current == nullptr)
-            return;
-        InOrderApply_aux(current->left, func);
-        func(current->data);
-        InOrderApply_aux(current->right, func);
-    }
-    void PreOrderApply_aux(AVLNode *current, std::function<void()> func)
-    {
-        if (current == nullptr)
-            return;
-        func(current->data);
-        PreOrderApply_aux(current->left, func);
-        PreOrderApply_aux(current->right, func);
-    }*/
     void Print_aux(AVLNode *current)
     {
         if (current == nullptr)
@@ -444,6 +417,13 @@ public:
         {
         }
     }
+    bool checkIfEmpty()
+    {
+        if(root->GetCounter() <= 0)
+            return true;
+        return false;
+    }
+
     void addPlayerTo(int key, int extra)
     {
         AVLNode *node = Find_aux(this->root, key);
@@ -557,20 +537,7 @@ public:
         int *array = new int[size];
         GetPlayersArray_AUX(root, array, &index);
         return array;
-    }/*
-    void PostOrderApply(std::function<void()> func)
-    {
-        PostOrderApply_aux(root, func);
     }
-    void InOrderApply(std::function<void()> func)
-    {
-        InOrderApply_aux(root, func);
-    }
-    void PreOrderApply(std::function<void()> func)
-    {
-        PreOrderApply_aux(root, func);
-    }
-*/
     int higherBound_aux(AVLNode *current, int higherLevel)
     {
         if (current != nullptr)
@@ -578,7 +545,7 @@ public:
             const int k = current->GetKey();
             if (k == higherLevel)
             {
-                return current->GetRight()->GetPlayers(); // Found the node :)
+                return current->GetRight()->GetCounter(); // Found the node :)
             }
             else if (higherLevel < k)
             {
@@ -596,7 +563,7 @@ public:
             const int k = current->GetKey();
             if (k == lowerLevel)
             {
-                return current->GetLeft()->GetPlayers(); // Found the node :)
+                return current->GetLeft()->GetCounter(); // Found the node :)
             }
             else if (lowerLevel < k)
             {
@@ -610,6 +577,7 @@ public:
 
     int GetNumOfPlayersInBound(int lowerLevel, int higherLevel)
     {
+        this->UpdateAllRankes(this->GetRoot());
         AVLNode *root = this->root;
         int higher_than = higherBound_aux(root, higherLevel);
         int lower_than = lowerBound_aux(root, lowerLevel);
@@ -633,6 +601,7 @@ public:
     }
     StatusType AverageHighest(int m, double *avgLevel)
     {
+        this->UpdateAllRankes(this->GetRoot());
         AVLNode *node = this->GetRoot();
         double sum = 0;
         int num = 0;
@@ -702,12 +671,8 @@ public:
         *avgLevel = sum / (double)(m); // if accedently got here and num == n
         return SUCCESS;
     }
-
     friend class Group;
     friend class Player;
-
 };
-
-
 
 #endif

@@ -1,8 +1,8 @@
 [
 {
   "directory": "/home/nircoe/Desktop/DS_HW2_WET/build",
-  "command": "/usr/bin/c++   -g -std=gnu++11 -o CMakeFiles/DS_Wet_2_Staff_Test.dir/ownTest.cpp.o -c /home/nircoe/Desktop/DS_HW2_WET/ownTest.cpp",
-  "file": "/home/nircoe/Desktop/DS_HW2_WET/ownTest.cpp"
+  "command": "/usr/bin/c++   -g -std=gnu++11 -o CMakeFiles/DS_Wet_2_Staff_Test.dir/main2.cpp.o -c /home/nircoe/Desktop/DS_HW2_WET/main2.cpp",
+  "file": "/home/nircoe/Desktop/DS_HW2_WET/main2.cpp"
 },
 {
   "directory": "/home/nircoe/Desktop/DS_HW2_WET/build",
