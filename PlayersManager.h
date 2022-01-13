@@ -9,7 +9,6 @@
 #include "Player.h"
 
 class UnionFind;
-template <typename T>
 class AVLTree;
 template <typename T>
 class HashTable;

@@ -9,9 +9,7 @@
 #include "library2.h"
 using std::shared_ptr;
 
-template <typename T>
 class AVLNode;
-template <typename T>
 class AVLTree;
 class Player;
 const int MAX_SCALE = 200;
@@ -24,7 +22,7 @@ class Group
     //* players[i] is all the players in the group with score i (0<i<201).
     //AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> *players;
     HashTable<shared_ptr<Player>> *playersbyid;
-    AVLTree<int> *levelsinscorei;
+    AVLTree *levelsinscorei;
 
 public:
     Group(int g_id, int scale);

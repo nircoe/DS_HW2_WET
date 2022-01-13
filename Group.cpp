@@ -9,10 +9,10 @@ Group::Group(int g_id, int scale) : group_id(g_id), group_size(0), scale(scale)
     if (scale > MAX_SCALE)
         throw FAILURE;
     playersbyid = new HashTable<shared_ptr<Player>>();
-    levelsinscorei = new AVLTree<int>[scale + 1];
+    levelsinscorei = new AVLTree[scale + 1];
     for (int i = 0; i <= scale; i++)
     {
-        levelsinscorei[i] = AVLTree<int>();
+        levelsinscorei[i] = AVLTree();
     }
 }
 
@@ -36,7 +36,7 @@ StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
 {
     int p_level = p.get()->GetLevel();
     int p_score = p.get()->GetScore();
-    AVLNode<int> *node;
+    AVLNode *node;
     //* do the same insert twice: once for players[0] and once for players[p_score]
     for (int i = 0; i < p_score + 1; i += p_score)
     {
@@ -45,7 +45,7 @@ StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
             node = levelsinscorei[i].GetLowestNodePointer(); // O(1) (level 0 is lowest)
             if (node == nullptr)                             //* this level exist in the tree
             {                                                //* create new node in the tree, insert level 0, tree is empty => O(1)
-                if (!levelsinscorei[i].Insert(p_level, 0))   //* if Insert return false => allocation error
+                if (!levelsinscorei[i].Insert(p_level))   //* if Insert return false => allocation error
                     return ALLOCATION_ERROR;
                 node = levelsinscorei[i].GetLowestNodePointer(); // level 0 will be the first node in the tree => the root
             }
@@ -55,7 +55,7 @@ StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
             node = levelsinscorei[i].Find_aux(levelsinscorei[i].GetRoot(), p_level);
             if (node == nullptr)
             {
-                if (!levelsinscorei[i].Insert(p_level, 0))
+                if (!levelsinscorei[i].Insert(p_level))
                     return ALLOCATION_ERROR;
                 node = levelsinscorei[i].Find_aux(levelsinscorei[i].GetRoot(), p_level);
             }
@@ -74,10 +74,10 @@ StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
     if (sp_p != nullptr)
     {
         int score = sp_p.get()->GetScore();
-        AVLNode<int> *root0 = levelsinscorei[0].GetRoot(), *rootscore = levelsinscorei[score].GetRoot();
+        AVLNode *root0 = levelsinscorei[0].GetRoot(), *rootscore = levelsinscorei[score].GetRoot();
         if (root0 && rootscore)
         {
-            AVLNode<int> *levelall = this->levelsinscorei[0].Find_aux(root0, p_level),
+            AVLNode *levelall = this->levelsinscorei[0].Find_aux(root0, p_level),
                          *levelscore = levelsinscorei[score].Find_aux(rootscore, p_level);
             if (levelall && levelscore)
             {
@@ -139,7 +139,7 @@ StatusType Group::GetPercentOfPlayersWithScoreInBounds(int score, int lowerLevel
 
 StatusType Group::AverageHighestPlayerLevel(int m, double *avgLevel)
 {
-    return AverageHighest<int>(this->levelsinscorei[0], m, avgLevel);
+    return levelsinscorei[0].AverageHighest(m, avgLevel);
 }
 
 shared_ptr<Player> *Group::GetAllPlayersInArray()
@@ -207,7 +207,7 @@ void Group::MergeWith(Group *sub)
             i2++;
             j++;
         }
-        AVLTree<int> merged_tree = AVLTree<int>(merged_keys, merged_players, j, 0);
+        AVLTree merged_tree = AVLTree(merged_keys, merged_players, j);
         delete[] keys1;
         delete[] keys2;
         delete[] players1;
@@ -232,7 +232,5 @@ Group::~Group()
     //* Should work, players is an array.
     //DeleteSharedPtrPlayerHashTable<shared_ptr<Player>>(playersbyid);
     delete playersbyid;
-    for (int i = 0; i < this->scale;i++)
-        levelsinscorei[i].~AVLTree();
     delete[] levelsinscorei;
 }

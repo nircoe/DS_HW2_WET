@@ -63,7 +63,7 @@ class HashTable
                 current = temp;
             }
         }
-        delete arr;
+        delete[] arr;
     }
     void resize()
     {
