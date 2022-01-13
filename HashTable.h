@@ -190,6 +190,7 @@ public:
             {
                 data[i] = temp->data;
                 i++;
+                temp = temp->next;
             }
         }
         return data;
@@ -210,5 +211,33 @@ public:
             }
         }
     }
+
+    template <typename type>
+    friend void DeleteSharedPtrPlayerHashTable(HashTable<type> *ht);
 };
+
+template <typename type>
+static void DeleteNodeRec(HTNode<type> *current)
+{
+    if (current->GetNext() == nullptr)
+    {
+        current->GetData().reset();
+        delete current;
+    }
+    else
+    {
+        DeleteNodeRec(current->GetNext());
+        delete current;
+    }
+}
+
+template <typename type>
+void DeleteSharedPtrPlayerHashTable(HashTable<type> *ht)
+{
+    for (int i = 0; i < ht->K; i++)
+    {
+        DeleteNodeRec(ht->arr[i]);
+    }
+    delete[] ht->arr;
+}
 #endif

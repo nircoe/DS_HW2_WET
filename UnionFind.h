@@ -10,6 +10,7 @@ class Group;
 class UnionFind
 {
     int *parents;
+    bool *is_merged;
     shared_ptr<Group> *groups;
     int size;
 
@@ -18,16 +19,26 @@ public:
     UnionFind(int k, int scale) : size(k)
     {
         parents = new int[k + 1];
+        is_merged = new bool[k + 1];
         groups = new shared_ptr<Group>[k + 1];
         for (int i = 0; i <= k; i++)
         {
             parents[i] = i;
+            is_merged[i] = false;
             groups[i] = make_shared<Group>(i, scale);
         }
     }
     UnionFind(const UnionFind &) = default;
     UnionFind &operator=(const UnionFind &) = default;
-    ~UnionFind() = default;
+    ~UnionFind()
+    {
+        delete[] parents;
+        //for (int i = 0; i <= size;i++)
+        //    if(groups[i] != nullptr && (!is_merged[i]))
+        //        groups[i].reset();
+        delete[] is_merged;
+        delete[] groups;
+    }
     int GetSize()
     {
         return (this != 0) ? this->size : -1;
@@ -76,6 +87,7 @@ public:
             sub_group.reset();
             main_group.get()->SetSize(main_size + sub_size);
             groups[parent_j] = main_group;
+            is_merged[parent_j] = true;
         }
         else
         {
@@ -87,6 +99,7 @@ public:
             sub_group.reset();
             main_group.get()->SetSize(main_size + sub_size);
             groups[parent_i] = main_group;
+            is_merged[parent_i] = true;
         }
         return groups[parent_of_union];
     }

@@ -20,7 +20,6 @@ class Player;
 class PlayersManager
 {
     UnionFind *groups;
-    HashTable<shared_ptr<Player>> *playersbyid;
     int numOfGroups;
     int maxScore;
     ~PlayersManager();
@@ -36,7 +35,7 @@ public:
     StatusType GetPercentOfPlayersWithScoreInBounds(int GroupID, int score, int lowerLevel, int higherLevel, double *players);
     StatusType AverageHighestPlayerLevelByGroup(int GroupID, int m, double *avgLevel);
     void Quit(PlayersManager *pm);
-    void printgroup1();
+    void printallgroups();
 };
 
 #endif

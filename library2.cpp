@@ -98,7 +98,8 @@ StatusType GetPlayersBound(void *DS, int GroupID, int score, int m,
 
 void Quit(void **DS)
 {
+    if(DS == NULL) return;
     PlayersManager *pm = ((PlayersManager *)(*DS));
     pm->Quit(pm);
-    DS = NULL;
+    *DS = nullptr;
 }

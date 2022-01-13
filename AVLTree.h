@@ -2,10 +2,13 @@
 #define AVL_TREE_H
 #include "AVLExceptions.h"
 #include "library2.h"
+#include "Group.h"
 #include <memory>
 #include <functional>
 using std::cout;
 using std::endl;
+
+class Group;
 
 template <typename T>
 class AVLNode;
@@ -87,6 +90,7 @@ class AVLNode
     //void ClearNode() { right = left = parent = nullptr; }
 
     friend class AVLTree<T>;
+    friend class Group;
 
     template <typename type>
     friend void DeletePlayersByIdTree(AVLNode<type> *node);
@@ -360,6 +364,14 @@ private:
         array[(*index)++] = node->GetKey();
         GetKeysArray_AUX(node->GetRight(), array, index);
     }
+    void GetPlayersArray_AUX(AVLNode<T> *node, int *array, int *index)
+    {
+        if(!node)
+            return;
+        GetPlayersArray_AUX(node->GetLeft(), array, index);
+        array[(*index)++] = node->GetPlayers();
+        GetPlayersArray_AUX(node->GetRight(), array, index);
+    }
     AVLNode<T> *SortedArrayToAVLTree(int *keys, T *data, int start, int end)
     {
         if (start > end)
@@ -375,6 +387,23 @@ private:
         if (right_child)
             right_child->SetParent(current);
         current->updateNode();
+        return current;
+    }
+    AVLNode<T> *SortedPlayersArrayToAVLTree(int *keys, int *players, int start, int end, int fixed_data) //for AVLTree<int> with node counter
+    {
+        if (start > end)
+            return nullptr;
+        int mid = (start + end) / 2;
+        AVLNode<T> *current = new AVLNode<T>(keys[mid], fixed_data);
+        AVLNode<T> *left_child = SortedPlayersArrayToAVLTree(keys, players, start, mid - 1, fixed_data);
+        current->SetLeft(left_child);
+        if(left_child)
+            left_child->SetParent(current);
+        AVLNode<T> *right_child = SortedPlayersArrayToAVLTree(keys, players, mid + 1, end, fixed_data);
+        current->SetRight(right_child);
+        if(right_child)
+            right_child->SetParent(current);
+        current->IncreasePlayers(players[mid]);
         return current;
     }
 
@@ -453,6 +482,18 @@ public:
         this->lowest = GetLowestNode(root);
         this->size = size_of_array;
     }
+    AVLTree(int *keys, int *players, int size_of_array, int fixed_data)
+    {
+        if(size_of_array == 0)
+            throw FAILURE_exception();
+        for (int i = 1; i < size_of_array;i++)
+            if(keys[i-1] >= keys[i])
+                throw FAILURE_exception();
+        this->root = SortedPlayersArrayToAVLTree(keys, players, 0, size_of_array - 1, fixed_data);
+        this->highest = GetGreatestNode(root);
+        this->lowest = GetLowestNode(root);
+        this->size = size_of_array;
+    }
     AVLNode<T> *CopyTree(AVLNode<T> *copy, AVLNode<T> *node_parent)
     {
         if (!copy)
@@ -460,6 +501,9 @@ public:
         AVLNode<T> *copied_node = new AVLNode<T>(copy->GetKey(), copy->GetData());
         copied_node->SetParent(node_parent);
         copied_node->height = copy->height;
+        copied_node->players = copy->players;
+        copied_node->sum = copy->sum;
+        copied_node->counter = copy->counter;
         copied_node->SetLeft(CopyTree(copy->GetLeft(), copied_node));
         copied_node->SetRight(CopyTree(copy->GetRight(), copied_node));
         return copied_node;
@@ -492,22 +536,7 @@ public:
         if (node)
             node->IncreasePlayers(extra);
     }
-    // void SwitchNodeData(int switch_key, T *new_data, AVLNode<T> *node)
-    // {
-    //     if (!node)
-    //         return;
-    //     if (node->GetKey() == switch_key)
-    //     {
-    //         shared_ptr<T> d = shared_ptr<T>(new_data);
-    //         node->SetData(d);
-    //     }
-    //     else if (node->GetKey() > switch_key)
-    //     {
-    //         SwitchNodeData(switch_key, new_data, node->GetLeft());
-    //     }
-    //     else if (node->GetKey() < switch_key)
-    //         SwitchNodeData(switch_key, new_data, node->GetRight());
-    // }
+
     AVLNode<T> *GetRoot() const
     {
         return (this != 0) ? root : nullptr;
@@ -531,6 +560,14 @@ public:
     T GetLowest() const
     {
         return lowest->GetData();
+    }
+    AVLNode<T> *GetHighestNodePointer()
+    {
+        return highest;
+    }
+    AVLNode<T> *GetLowestNodePointer()
+    {
+        return lowest;
     }
     bool IsEmpty()
     {
@@ -630,6 +667,13 @@ public:
         GetKeysArray_AUX(root, array, &index);
         return array;
     }
+    int *GetPlayersArray()
+    {
+        int index = 0;
+        int *array = new int[size];
+        GetPlayersArray_AUX(root, array, &index);
+        return array;
+    }
     void PostOrderApply(std::function<void(T)> func)
     {
         PostOrderApply_aux(root, func);
@@ -643,36 +687,67 @@ public:
         PreOrderApply_aux(root, func);
     }
 
-    double GetNumOfPlayersInBound(int lowerLevel, int higherLevel)
+    int higherBound_aux(AVLNode<T> *current, int higherLevel)
+    {
+        if (current != nullptr)
+        {
+            const int k = current->GetKey();
+            if (k == higherLevel)
+            {
+                return current->GetRight()->GetPlayers(); // Found the node :)
+            }
+            else if (higherLevel < k)
+            {
+                return current->players + current->GetRight()->GetCounter() + higherBound_aux(current->GetLeft(), higherLevel);
+            }
+            else
+                return higherBound_aux(current->GetRight(), higherLevel);
+        }
+        return 0; //didnt found the node :(
+    }
+    int lowerBound_aux(AVLNode<T> *current, int lowerLevel)
+    {
+        if (current != nullptr)
+        {
+            const int k = current->GetKey();
+            if (k == lowerLevel)
+            {
+                return current->GetLeft()->GetPlayers(); // Found the node :)
+            }
+            else if (lowerLevel < k)
+            {
+                return lowerBound_aux(current->GetLeft(), lowerLevel);
+            }
+            else
+                return current->players + current->GetLeft()->GetCounter() + lowerBound_aux(current->GetRight(), lowerLevel);
+        }
+        return 0; //didnt found the node :(
+    }
+
+    int GetNumOfPlayersInBound(int lowerLevel, int higherLevel)
     {
         AVLNode<T> *root = this->root;
-        AVLNode<T> *lower = this->Find_aux(root, lowerLevel), *higher = this->Find_aux(root, higherLevel);
-        bool lower_added = false, higher_added = false;
-        if (lower == nullptr)
-        {
-            //type lower_data = type();
-            if (this->Insert(lowerLevel, 0) != true)
-                throw std::exception();
-            lower = this->Find_aux(root, lowerLevel);
-            lower_added = true;
-        }
-        if (higher == nullptr)
-        {
-        //type higher_data = type();
-        if (this->Insert(higherLevel, 0) != true)
-            throw std::exception();
-        higher = this->Find_aux(root, higherLevel);
-        higher_added = true;
-        }
-        double all_players = (double)(root->GetCounter());
-        double lower_then_higherLevel_players = (higher->GetRight() == nullptr) ? all_players : all_players - (double)(higher->GetRight()->GetCounter());
-        double lower_then_lowerLevel_players = (lower->GetLeft() == nullptr) ? 0 : (double)(lower->GetLeft()->GetCounter());
-        if (lower_added && this->Remove(lowerLevel) != true)
-            throw std::exception();
-        if (higher_added && this->Remove(higherLevel) != true)
-        throw std::exception();
+        int higher_than = higherBound_aux(root, higherLevel);
+        int lower_than = lowerBound_aux(root, lowerLevel);
 
-    return lower_then_higherLevel_players - lower_then_lowerLevel_players;
+        //cout << "root is " << root->key << " with counter " << root->GetCounter() << endl;
+        //cout << root->GetCounter() << " - " << lower_than << " - " << higher_than << endl;
+        return root->GetCounter() - lower_than - higher_than;
+    }
+
+    void printTree_AUX(std::ostream &os, AVLNode<T> *node)
+    {
+        if(!node)
+            return;
+        printTree_AUX(os, node->GetLeft());
+        os << "Level = " << node->GetKey() << " | Players = " << node->GetPlayers();
+        os << " | Counter = " << node->GetCounter() << " | Sum = " << node->GetSum() << std::endl;
+        printTree_AUX(os, node->GetRight());
+    }
+    //template <typename T>
+    void printTree(std::ostream &os)
+    {
+      printTree_AUX(os, this->GetRoot());
     }
 
     friend class Group;

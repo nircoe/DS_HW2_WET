@@ -5,13 +5,11 @@ PlayersManager::PlayersManager(int k, int scale)
     numOfGroups = k;
     maxScore = scale;
     groups = new UnionFind(k, scale);
-    playersbyid = new HashTable<shared_ptr<Player>>();
 }
 
 PlayersManager::~PlayersManager()
 {
     delete groups;
-    delete playersbyid;
 }
 
 StatusType PlayersManager::MergeGroups(int GroupID1, int GroupID2)
@@ -26,47 +24,48 @@ StatusType PlayersManager::AddPlayer(int PlayerID, int GroupID, int score)
 {
     if (GroupID <= 0 || score <= 0 || GroupID > numOfGroups || score > maxScore)
         return INVALID_INPUT;
-    shared_ptr<Player> player = this->playersbyid->Search(PlayerID);
+    shared_ptr<Group> main_group = this->groups->GetMainGroup();
+    shared_ptr<Player> player = main_group.get()->GetPlayersByID()->Search(PlayerID);
     if (player != nullptr)
         return FAILURE;
     player = make_shared<Player>(PlayerID, score, GroupID);
-    this->playersbyid->Insert(PlayerID, player);
-    shared_ptr<Group> group = this->groups->Find(GroupID), mainGroup = this->groups->GetMainGroup();
+    shared_ptr<Group> group = this->groups->Find(GroupID);
     //shared_ptr<Group> g1 = this->groups.Find(1);
     //cout << *(g1.get()) << std::endl;
     if (group.get()->AddPlayerToGroup(player) != SUCCESS ||
-        mainGroup.get()->AddPlayerToGroup(player) != SUCCESS)
+        main_group.get()->AddPlayerToGroup(player) != SUCCESS)
         return ALLOCATION_ERROR;
     return SUCCESS;
 } 
 StatusType PlayersManager::RemovePlayer(int PlayerID)
 {
-    shared_ptr<Player> player = this->playersbyid->Search(PlayerID);
+    shared_ptr<Group> main_group = this->groups->GetMainGroup();
+    shared_ptr<Player> player = main_group.get()->GetPlayersByID()->Search(PlayerID);
     if (player == nullptr)
         return FAILURE;
-    shared_ptr<Group> group = this->groups->Find(player.get()->GetGroup()),
-                      mainGroup = this->groups->GetMainGroup();
+    shared_ptr<Group> group = this->groups->Find(player.get()->GetGroup());
     int p_level = player.get()->GetLevel();
-    if (playersbyid->Delete(PlayerID) != true ||
-        group.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS ||
-        mainGroup.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS)
+    if (group.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS ||
+        main_group.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS)
         return FAILURE;
     return SUCCESS;
 }
 StatusType PlayersManager::IncreasePlayerIDLevel(int PlayerID, int LevelIncrease)
 {
-    shared_ptr<Player> player = this->playersbyid->Search(PlayerID);
+    if(LevelIncrease <= 0)
+        return INVALID_INPUT;
+    shared_ptr<Group> main_group = this->groups->GetMainGroup();
+    shared_ptr<Player> player = main_group.get()->GetPlayersByID()->Search(PlayerID);
     if (player == nullptr)
         return FAILURE;
     int p_level = player.get()->GetLevel();
-    shared_ptr<Group> group = this->groups->Find(player.get()->GetGroup()),
-                      mainGroup = this->groups->GetMainGroup();
+    shared_ptr<Group> group = this->groups->Find(player.get()->GetGroup());
     if (group.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS ||
-        mainGroup.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS)
+        main_group.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS)
         return FAILURE;
     player.get()->IncrementLevel(LevelIncrease);
     if (group.get()->AddPlayerToGroup(player) != SUCCESS ||
-        mainGroup.get()->AddPlayerToGroup(player) != SUCCESS)
+        main_group.get()->AddPlayerToGroup(player) != SUCCESS)
         return ALLOCATION_ERROR;
     return SUCCESS;
 }
@@ -74,18 +73,18 @@ StatusType PlayersManager::ChangePlayerIDScore(int PlayerID, int NewScore)
 {
     if (NewScore <= 0 || NewScore > maxScore)
         return INVALID_INPUT;
-    shared_ptr<Player> player = this->playersbyid->Search(PlayerID);
+    shared_ptr<Group> main_group = this->groups->GetMainGroup();
+    shared_ptr<Player> player = main_group.get()->GetPlayersByID()->Search(PlayerID);
     if (player == 0)
         return FAILURE;
     int p_level = player.get()->GetLevel();
-    shared_ptr<Group> group = this->groups->Find(player.get()->GetGroup()),
-                      mainGroup = this->groups->GetMainGroup();
+    shared_ptr<Group> group = this->groups->Find(player.get()->GetGroup());
     if (group.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS ||
-        mainGroup.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS)
+        main_group.get()->RemovePlayerFromGroup(PlayerID, p_level) != SUCCESS)
         return FAILURE;
     player.get()->SetScore(NewScore);
     if (group.get()->AddPlayerToGroup(player) != SUCCESS ||
-        mainGroup.get()->AddPlayerToGroup(player) != SUCCESS)
+        main_group.get()->AddPlayerToGroup(player) != SUCCESS)
         return ALLOCATION_ERROR;
     return SUCCESS;
 }
@@ -108,8 +107,12 @@ void PlayersManager::Quit(PlayersManager *pm)
     delete pm;
 }
 
-void PlayersManager::printgroup1()
+void PlayersManager::printallgroups()
 {
-    shared_ptr<Group> group = this->groups->GetMainGroup();
-    group.get()->printlevel0();
+    cout << *(groups->GetMainGroup().get()) << std::endl;
+    for (int i = 1; i <= numOfGroups;i++)
+    {
+        cout << *(groups->Find(i).get()) << std::endl;
+    }
+    cout << "End Print" << std::endl << std::endl;
 }

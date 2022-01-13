@@ -3,27 +3,19 @@
 #include <memory>
 using std::make_shared;
 using std::shared_ptr;
-/*
-    StatusType AddPlayerToGroup(shared_ptr<Player> p);
-    StatusType RemovePlayerFromGroup(int p_id, int p_level);
-    StatusType RemovePlayerFromGroupWithoutDelete(Player *p);
-*/
+
 Group::Group(int g_id, int scale) : group_id(g_id), group_size(0), scale(scale)
 {
     if (scale > MAX_SCALE)
         throw FAILURE;
-    players = new AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>>[scale + 1];
+    playersbyid = new HashTable<shared_ptr<Player>>();
+    levelsinscorei = new AVLTree<int>[scale + 1];
     for (int i = 0; i <= scale; i++)
     {
-        players[i] = AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>>();
+        levelsinscorei[i] = AVLTree<int>();
     }
 }
-// Group::Group(int g_id, int g_size, AVLTree<HashTable<shared_ptr<Player>>> &g_players)
-// {
-//     group_id = g_id;
-//     group_size = g_size;
-//     players = g_players;
-// }
+
 int Group::GetId()
 {
     return (this != 0) ? this->group_id : -1;
@@ -31,6 +23,10 @@ int Group::GetId()
 int Group::GetSize()
 {
     return (this != 0) ? this->group_size : -1;
+}
+HashTable<shared_ptr<Player>> *Group::GetPlayersByID()
+{
+    return (this != 0) ? this->playersbyid : nullptr;
 }
 void Group::SetSize(int new_size)
 {
@@ -40,102 +36,120 @@ StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
 {
     int p_level = p.get()->GetLevel();
     int p_score = p.get()->GetScore();
-    shared_ptr<HashTable<shared_ptr<Player>>> ht_ptr;
+    AVLNode<int> *node;
     //* do the same insert twice: once for players[0] and once for players[p_score]
     for (int i = 0; i < p_score + 1; i += p_score)
     {
-        if (players[i].Exists(p_level)) //* this level exist in the tree
-            ht_ptr = players[i].Find(p_level);
-        else //* create new node in the tree
+        if (p_level == 0)
         {
-            ht_ptr = make_shared<HashTable<shared_ptr<Player>>>();
-            if (!players[i].Insert(p_level, ht_ptr)) //* if Insert return false => allocation error
-            {
-                //? ht_ptr.reset();
-                return ALLOCATION_ERROR;
+            node = levelsinscorei[i].GetLowestNodePointer(); // O(1) (level 0 is lowest)
+            if (node == nullptr)                             //* this level exist in the tree
+            {                                                //* create new node in the tree, insert level 0, tree is empty => O(1)
+                if (!levelsinscorei[i].Insert(p_level, 0))   //* if Insert return false => allocation error
+                    return ALLOCATION_ERROR;
+                node = levelsinscorei[i].GetLowestNodePointer(); // level 0 will be the first node in the tree => the root
             }
         }
-        if (ht_ptr.get()->Insert(p.get()->GetId(), p) == -1) //* if Insert return false => allocation error
-            return ALLOCATION_ERROR;
-        players[i].addPlayerTo(p_level, 1);
+        else // only in IncreasePlayerIDLevel , O(log n)
+        {
+            node = levelsinscorei[i].Find_aux(levelsinscorei[i].GetRoot(), p_level);
+            if (node == nullptr)
+            {
+                if (!levelsinscorei[i].Insert(p_level, 0))
+                    return ALLOCATION_ERROR;
+                node = levelsinscorei[i].Find_aux(levelsinscorei[i].GetRoot(), p_level);
+            }
+        }
+        node->IncreasePlayers(1);
+        levelsinscorei[i].UpdateAllRankes(levelsinscorei[i].GetRoot()); 
     }
+    this->playersbyid->Insert(p.get()->GetId(), p);
     this->group_size++;
-    cout << "Group " << this->GetId() << std::endl
-         << *(players[0].Find(p_level).get());
 
     return SUCCESS;
 }
 StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
 {
-    cout << "Group " << this->group_id << " level " << p_level << " before delete"<< std::endl << *(players[0].Find(p_level).get());
-    shared_ptr<Player> sp_p = players[0].Find(p_level).get()->Search(p_id);
-    if (sp_p != NULL)
+    shared_ptr<Player> sp_p = playersbyid->Search(p_id);
+    if (sp_p != nullptr)
     {
         int score = sp_p.get()->GetScore();
-        if (players[0].Find(p_level).get()->Delete(p_id) &&
-            players[score].Find(p_level).get()->Delete(p_id))
+        AVLNode<int> *root0 = levelsinscorei[0].GetRoot(), *rootscore = levelsinscorei[score].GetRoot();
+        if (root0 && rootscore)
         {
-            players[0].addPlayerTo(p_level, -1);
-            players[score].addPlayerTo(p_level, -1);
-            this->group_size--;
-            cout << "Group " << this->group_id << " level " << p_level << " after delete"<< std::endl << *(players[0].Find(p_level).get());
-            return SUCCESS;
+            AVLNode<int> *levelall = this->levelsinscorei[0].Find_aux(root0, p_level),
+                         *levelscore = levelsinscorei[score].Find_aux(rootscore, p_level);
+            if (levelall && levelscore)
+            {
+                levelall->IncreasePlayers(-1);
+                levelscore->IncreasePlayers(-1);
+                if (p_level != 0)
+                {
+                    if (levelall->GetPlayers() == 0)
+                        levelsinscorei[0].Remove(p_level);
+                    if (levelscore->GetPlayers() == 0)
+                        levelsinscorei[score].Remove(p_level);
+                }
+                this->group_size--;
+                this->playersbyid->Delete(p_id);
+                return SUCCESS;
+            }
         }
     }
     return FAILURE;
 }
 std::ostream &operator<<(std::ostream &os, const Group &g)
 {
-    os << "GROUP " << g.group_id << std::endl;
-    shared_ptr<HashTable<shared_ptr<Player>>> *ps = g.players[0].GetDataArray();
-    for (int i = 0; ps[i] != nullptr; i++)
+    os << "GROUP " << g.group_id << " | Total Players = " << g.group_size << std::endl;
+    if (g.group_size > 0)
     {
-        os << *(ps[i].get()) << std::endl;
+        os << "Players by ID" << std::endl
+           << (*(g.playersbyid)) << std::endl;
+        os << "All Players Levels" << std::endl;
+        g.levelsinscorei[0].printTree(os);
+        for (int i = 1; i <= g.scale; i++)
+        {
+            if (g.levelsinscorei[i].GetTreeSize() > 0)
+            {
+                os << std::endl
+                   << "Score " << i << " Players Levels" << std::endl;
+                g.levelsinscorei[i].printTree(os);
+                os << std::endl;
+            }
+        }
     }
     return os;
 }
+
 StatusType Group::GetPercentOfPlayersWithScoreInBounds(int score, int lowerLevel, int higherLevel, double *players)
 {
-    double total_players_in_bound, total_players_with_score_in_bound;
-    total_players_in_bound = this->players[0].GetNumOfPlayersInBound(lowerLevel, higherLevel);
+    int total_players_in_bound, total_players_with_score_in_bound;
+    total_players_in_bound = this->levelsinscorei[0].GetNumOfPlayersInBound(lowerLevel, higherLevel);
     if (total_players_in_bound == 0)
         return FAILURE;
     if (score < 1 || scale < score)
         total_players_with_score_in_bound = 0;
     else
-        total_players_with_score_in_bound = this->players[score].GetNumOfPlayersInBound(lowerLevel, higherLevel);
-    *players = ((total_players_with_score_in_bound / total_players_in_bound) * 100);
+    {
+        total_players_with_score_in_bound = this->levelsinscorei[score].GetNumOfPlayersInBound(lowerLevel, higherLevel);
+    }
+    *players = ((double)total_players_with_score_in_bound / (double)total_players_in_bound) * 100;
     return SUCCESS;
 }
 
 StatusType Group::AverageHighestPlayerLevel(int m, double *avgLevel)
 {
-    return AverageHighest<shared_ptr<HashTable<shared_ptr<Player>>>>(this->players[0], m, avgLevel);
+    return AverageHighest<int>(this->levelsinscorei[0], m, avgLevel);
 }
-// AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> *Group::GetPlayers()
-// {
-//     return this->players.;
-// }
-// void Group::SetTree(AVLTree<shared_ptr<AVLTree<shared_ptr<Player>>>> &new_players, int new_size)
-// {
-//     this->group_size = new_size;
-//     this->players = new_players;
-// }
+
 shared_ptr<Player> *Group::GetAllPlayersInArray()
 {
-    shared_ptr<Player> *players_in_ht;
-    shared_ptr<Player> *all_players = new shared_ptr<Player>[group_size];
-    int index = 0;
-    HashTable<std::shared_ptr<Player>> *hts = this->players[0].GetDataArray()->get();
-    int n = this->players[0].GetTreeSize();
+    shared_ptr<Player> *all_players = new shared_ptr<Player>[group_size];  
+    shared_ptr<Player> *hts = this->playersbyid->GetDataArray();
+    int n = this->playersbyid->GetSize();
     for (int i = 0; i < n; i++)
     {
-        players_in_ht = hts[i].GetDataArray();
-        for (int j = 0; j < hts[i].GetSize(); j++)
-        {
-            all_players[index] = players_in_ht[j];
-            index++;
-        }
+        all_players[i] = hts[i];
     }
     return all_players;
 }
@@ -144,36 +158,35 @@ void Group::MergeWith(Group *sub)
 {
     for (int i = 0; i <= scale; i++)
     {
-        int n1 = this->players[i].GetTreeSize(),
-            n2 = sub->players[i].GetTreeSize(),
+        int n1 = this->levelsinscorei[i].GetTreeSize(),
+            n2 = sub->levelsinscorei[i].GetTreeSize(),
             i1 = 0, i2 = 0, j = 0;
         if (n1 + n2 == 0)
             continue;
-        int *keys1 = this->players[i].GetKeysArray(),
-            *keys2 = sub->players[i].GetKeysArray(),
+        int *keys1 = this->levelsinscorei[i].GetKeysArray(),
+            *keys2 = sub->levelsinscorei[i].GetKeysArray(),
             *merged_keys = new int[n1 + n2];
-        shared_ptr<HashTable<shared_ptr<Player>>> *data1 = this->players[i].GetDataArray(),
-                                                  *data2 = sub->players[i].GetDataArray(),
-                                                  *merged_data = new shared_ptr<HashTable<shared_ptr<Player>>>[n1 + n2];
+        int *players1 = this->levelsinscorei[i].GetPlayersArray(),
+            *players2 = sub->levelsinscorei[i].GetPlayersArray(),
+            *merged_players = new int[n1 + n2];
         //* merging hashtables by each level:
         while (i1 < n1 && i2 < n2)
         {
             if (keys1[i1] < keys2[i2])
             {
-                merged_data[j] = data1[i1];
+                merged_players[j] = players1[i1];
                 merged_keys[j] = keys1[i1];
                 i1++;
             }
             else if (keys1[i1] > keys2[i2])
             {
-                merged_data[j] = data2[i2];
+                merged_players[j] = players2[i2];
                 merged_keys[j] = keys2[i2];
                 i2++;
             }
             else
             {
-                data1[i1].get()->MergeWith(data2[i2].get());
-                merged_data[j] = data1[i1];
+                merged_players[j] = players1[i1] + players2[i2];
                 merged_keys[j] = keys1[i1];
                 i1++;
                 i2++;
@@ -182,40 +195,44 @@ void Group::MergeWith(Group *sub)
         }
         while (i1 < n1)
         {
-            merged_data[j] = data1[i1];
+            merged_players[j] = players1[i1];
             merged_keys[j] = keys1[i1];
             i1++;
             j++;
         }
         while (i2 < n2)
         {
-            merged_data[j] = data2[i2];
+            merged_players[j] = players2[i2];
             merged_keys[j] = keys2[i2];
             i2++;
             j++;
         }
-        AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> *merged_tree =
-            new AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>>(merged_keys, merged_data, j);
+        AVLTree<int> merged_tree = AVLTree<int>(merged_keys, merged_players, j, 0);
         delete[] keys1;
         delete[] keys2;
-        delete[] data1;
-        delete[] data2;
-        delete[] merged_data;
+        delete[] players1;
+        delete[] players2;
+        delete[] merged_players;
         delete[] merged_keys;
-        merged_tree->UpdateAllRankes(merged_tree->root);
+        merged_tree.UpdateAllRankes(merged_tree.GetRoot());
         //! I hope this won`t cause problems:
-        this->players[i] = *merged_tree;
+        this->levelsinscorei[i] = merged_tree;
     }
+    shared_ptr<Player> *players = sub->GetPlayersByID()->GetDataArray();
+    int n = sub->GetPlayersByID()->GetSize();
+    for (int i = 0; i < n; i++)
+        players[i].get()->SetGroup(this->GetId());
+    this->playersbyid->MergeWith(sub->playersbyid);
+    delete[] players;
     //delete sub;
 }
 
 Group::~Group()
 {
     //* Should work, players is an array.
-    delete[] players;
-}
-
-void Group::printlevel0()
-{
-    cout << "Group 0 level 0:" << std::endl << *(this->players[0].Find(0).get()) << std::endl;
+    //DeleteSharedPtrPlayerHashTable<shared_ptr<Player>>(playersbyid);
+    delete playersbyid;
+    for (int i = 0; i < this->scale;i++)
+        levelsinscorei[i].~AVLTree();
+    delete[] levelsinscorei;
 }

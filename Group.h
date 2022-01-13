@@ -9,6 +9,10 @@
 #include "library2.h"
 using std::shared_ptr;
 
+template <typename T>
+class AVLNode;
+template <typename T>
+class AVLTree;
 class Player;
 const int MAX_SCALE = 200;
 class Group
@@ -18,7 +22,9 @@ class Group
     int scale;
     //* players[0] is all the players in the group,
     //* players[i] is all the players in the group with score i (0<i<201).
-    AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> *players;
+    //AVLTree<shared_ptr<HashTable<shared_ptr<Player>>>> *players;
+    HashTable<shared_ptr<Player>> *playersbyid;
+    AVLTree<int> *levelsinscorei;
 
 public:
     Group(int g_id, int scale);
@@ -29,6 +35,7 @@ public:
 
     int GetId();
     int GetSize();
+    HashTable<shared_ptr<Player>> *GetPlayersByID();
     void SetSize(int new_size);
     StatusType AddPlayerToGroup(shared_ptr<Player> p);
     StatusType RemovePlayerFromGroup(int p_id, int p_level);
@@ -38,9 +45,6 @@ public:
     StatusType AverageHighestPlayerLevel(int m, double *avgLevel);
     shared_ptr<Player> *GetAllPlayersInArray();
     void MergeWith(Group *subgroup);
-    void printlevel0();
-    //AVLTree<HashTable<shared_ptr<Player>>> *GetPlayerByLevel();
-    //void SetTree(AVLTree<HashTable<shared_ptr<Player>>> &players, int new_size);
 };
 
 #endif
