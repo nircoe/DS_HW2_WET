@@ -1,9 +1,7 @@
 #include "PlayersManager.h"
 
-PlayersManager::PlayersManager(int k, int scale)
+PlayersManager::PlayersManager(int k, int scale) : numOfGroups(k), maxScore(scale)
 {
-    numOfGroups = k;
-    maxScore = scale;
     groups = new UnionFind(k, scale);
 }
 
@@ -14,9 +12,9 @@ PlayersManager::~PlayersManager()
 
 StatusType PlayersManager::MergeGroups(int GroupID1, int GroupID2)
 {
-    if(GroupID1 <= 0 || GroupID2 <= 0 || GroupID1 > numOfGroups || GroupID2 > numOfGroups)
+    if (GroupID1 <= 0 || GroupID2 <= 0 || GroupID1 > numOfGroups || GroupID2 > numOfGroups)
         return INVALID_INPUT;
-    if(groups->Union(GroupID1, GroupID2) == nullptr)
+    if (groups->Union(GroupID1, GroupID2) == nullptr)
         return FAILURE;
     return SUCCESS;
 }
@@ -36,7 +34,7 @@ StatusType PlayersManager::AddPlayer(int PlayerID, int GroupID, int score)
         main_group.get()->AddPlayerToGroup(player) != SUCCESS)
         return ALLOCATION_ERROR;
     return SUCCESS;
-} 
+}
 StatusType PlayersManager::RemovePlayer(int PlayerID)
 {
     shared_ptr<Group> main_group = this->groups->GetMainGroup();
@@ -52,7 +50,7 @@ StatusType PlayersManager::RemovePlayer(int PlayerID)
 }
 StatusType PlayersManager::IncreasePlayerIDLevel(int PlayerID, int LevelIncrease)
 {
-    if(LevelIncrease <= 0)
+    if (LevelIncrease <= 0)
         return INVALID_INPUT;
     shared_ptr<Group> main_group = this->groups->GetMainGroup();
     shared_ptr<Player> player = main_group.get()->GetPlayersByID()->Search(PlayerID);
@@ -110,9 +108,10 @@ void PlayersManager::Quit(PlayersManager *pm)
 void PlayersManager::printallgroups()
 {
     cout << *(groups->GetMainGroup().get()) << std::endl;
-    for (int i = 1; i <= numOfGroups;i++)
+    for (int i = 1; i <= numOfGroups; i++)
     {
         cout << *(groups->Find(i).get()) << std::endl;
     }
-    cout << "End Print" << std::endl << std::endl;
+    cout << "End Print" << std::endl
+         << std::endl;
 }
