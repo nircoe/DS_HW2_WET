@@ -38,6 +38,8 @@ void Group::SetSize(int new_size)
 }
 StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
 {
+    //TODO: remove print
+    std::cout << "adding " << p.get()->GetId() << " to group " << this->GetId() << std::endl;
     int p_level = p.get()->GetLevel();
     int p_score = p.get()->GetScore();
     shared_ptr<HashTable<shared_ptr<Player>>> ht_ptr;
@@ -52,22 +54,32 @@ StatusType Group::AddPlayerToGroup(shared_ptr<Player> p)
             if (!players[i].Insert(p_level, ht_ptr)) //* if Insert return false => allocation error
             {
                 //? ht_ptr.reset();
+                //TODO: remove
+                cout << "FAILED TO ADD NEW HASHTABLE!!!!!" << endl;
                 return ALLOCATION_ERROR;
             }
         }
         if (ht_ptr.get()->Insert(p.get()->GetId(), p) == -1) //* if Insert return false => allocation error
+        {
+            //TODO: remove
+            cout << "FAILED TO ADD NEW PLAYER!!!!!" << endl;
             return ALLOCATION_ERROR;
+        }
         players[i].addPlayerTo(p_level, 1);
     }
     this->group_size++;
-    cout << "Group " << this->GetId() << std::endl
-         << *(players[0].Find(p_level).get());
+    //TODO: remove
+    cout << *this << endl;
+    //cout << "Group " << this->GetId() << std::endl
+    //    << *(players[0].Find(p_level).get());
 
     return SUCCESS;
 }
 StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
 {
-    cout << "Group " << this->group_id << " level " << p_level << " before delete"<< std::endl << *(players[0].Find(p_level).get());
+    //TODO: remove
+    cout << "group " << this->GetId() << " removing " << p_id << " from level " << p_level;
+    //cout << "Group " << this->group_id << " level " << p_level << " before delete"<< std::endl << *(players[0].Find(p_level).get());
     shared_ptr<Player> sp_p = players[0].Find(p_level).get()->Search(p_id);
     if (sp_p != NULL)
     {
@@ -78,33 +90,46 @@ StatusType Group::RemovePlayerFromGroup(int p_id, int p_level)
             players[0].addPlayerTo(p_level, -1);
             players[score].addPlayerTo(p_level, -1);
             this->group_size--;
-            cout << "Group " << this->group_id << " level " << p_level << " after delete"<< std::endl << *(players[0].Find(p_level).get());
+            //cout << "Group " << this->group_id << " level " << p_level << " after delete"<< std::endl << *(players[0].Find(p_level).get());
+            cout << " DONE" << endl;
             return SUCCESS;
         }
     }
+    cout << " FAILED" << endl;
     return FAILURE;
 }
 std::ostream &operator<<(std::ostream &os, const Group &g)
 {
-    os << "GROUP " << g.group_id << std::endl;
-    shared_ptr<HashTable<shared_ptr<Player>>> *ps = g.players[0].GetDataArray();
-    for (int i = 0; ps[i] != nullptr; i++)
+    os << "Group " << g.group_id << ":" << std::endl;
+    for (int i = 0; i <= g.scale; i++)
     {
-        os << *(ps[i].get()) << std::endl;
+        if (g.players[i].GetTreeSize())
+        {
+            os << "PLayers with score: " << i << ":" << endl;
+            g.players[i].Print();
+        }
     }
+
     return os;
 }
 StatusType Group::GetPercentOfPlayersWithScoreInBounds(int score, int lowerLevel, int higherLevel, double *players)
 {
-    double total_players_in_bound, total_players_with_score_in_bound;
+    int total_players_in_bound, total_players_with_score_in_bound;
     total_players_in_bound = this->players[0].GetNumOfPlayersInBound(lowerLevel, higherLevel);
+    //TODO: Remove this print.
+    std::cout << "total_in_bound: " << total_players_in_bound << std::endl;
     if (total_players_in_bound == 0)
         return FAILURE;
     if (score < 1 || scale < score)
         total_players_with_score_in_bound = 0;
     else
+    {
         total_players_with_score_in_bound = this->players[score].GetNumOfPlayersInBound(lowerLevel, higherLevel);
-    *players = ((total_players_with_score_in_bound / total_players_in_bound) * 100);
+        cout << "printing group " << this->GetId() << " in score " << score << endl;
+        this->players[score].Print();
+    }
+    std::cout << "score_in_bound: " << total_players_with_score_in_bound << std::endl;
+    *players = ((double)total_players_with_score_in_bound / (double)total_players_in_bound) * 100;
     return SUCCESS;
 }
 
@@ -217,5 +242,6 @@ Group::~Group()
 
 void Group::printlevel0()
 {
-    cout << "Group 0 level 0:" << std::endl << *(this->players[0].Find(0).get()) << std::endl;
+    cout << "Group 0 level 0:" << std::endl
+         << *(this->players[0].Find(0).get()) << std::endl;
 }

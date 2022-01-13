@@ -1,6 +1,6 @@
 #include "PlayersManager.h"
 
-PlayersManager::PlayersManager(int k, int scale)
+PlayersManager::PlayersManager(int k, int scale) 
 {
     numOfGroups = k;
     maxScore = scale;
@@ -10,15 +10,16 @@ PlayersManager::PlayersManager(int k, int scale)
 
 PlayersManager::~PlayersManager()
 {
+    cout << "~PlayersManager" << endl;
     delete groups;
     delete playersbyid;
 }
 
 StatusType PlayersManager::MergeGroups(int GroupID1, int GroupID2)
 {
-    if(GroupID1 <= 0 || GroupID2 <= 0 || GroupID1 > numOfGroups || GroupID2 > numOfGroups)
+    if (GroupID1 <= 0 || GroupID2 <= 0 || GroupID1 > numOfGroups || GroupID2 > numOfGroups)
         return INVALID_INPUT;
-    if(groups->Union(GroupID1, GroupID2) == nullptr)
+    if (groups->Union(GroupID1, GroupID2) == nullptr)
         return FAILURE;
     return SUCCESS;
 }
@@ -38,7 +39,7 @@ StatusType PlayersManager::AddPlayer(int PlayerID, int GroupID, int score)
         mainGroup.get()->AddPlayerToGroup(player) != SUCCESS)
         return ALLOCATION_ERROR;
     return SUCCESS;
-} 
+}
 StatusType PlayersManager::RemovePlayer(int PlayerID)
 {
     shared_ptr<Player> player = this->playersbyid->Search(PlayerID);
@@ -105,11 +106,26 @@ StatusType PlayersManager::AverageHighestPlayerLevelByGroup(int GroupID, int m, 
 }
 void PlayersManager::Quit(PlayersManager *pm)
 {
+    cout << "PlayersManager::Quit" << endl;
     delete pm;
 }
 
-void PlayersManager::printgroup1()
+void PlayersManager::PrintGroup(int id)
 {
-    shared_ptr<Group> group = this->groups->GetMainGroup();
-    group.get()->printlevel0();
+    shared_ptr<Group> group;
+    if (id == 0)
+        group = this->groups->GetMainGroup();
+    else
+        group = this->groups->Find(id);
+    cout << *group.get() << endl;
+}
+std::ostream &operator<<(std::ostream &os, const PlayersManager &pm)
+{
+    os << "-----------PLAYER MANAGER----------------" << endl;
+    os << "numOfGroups: " << pm.numOfGroups << " maxScore: " << pm.maxScore << endl;
+    os << "UNIONFIND:" << endl;
+    os << *pm.groups << endl;
+    os << "HashTable:" << endl;
+    os << *pm.playersbyid << endl;
+    return os;
 }

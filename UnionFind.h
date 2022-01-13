@@ -2,6 +2,8 @@
 #define UNION_FIND_H
 #include <memory>
 #include "Group.h"
+using std::cout;
+using std::endl;
 using std::make_shared;
 using std::shared_ptr;
 
@@ -27,7 +29,12 @@ public:
     }
     UnionFind(const UnionFind &) = default;
     UnionFind &operator=(const UnionFind &) = default;
-    ~UnionFind() = default;
+    ~UnionFind()
+    {
+        cout << "~UnionFind" << endl;
+        delete[] parents;
+        delete[] groups;
+    }
     int GetSize()
     {
         return (this != 0) ? this->size : -1;
@@ -89,6 +96,22 @@ public:
             groups[parent_i] = main_group;
         }
         return groups[parent_of_union];
+    }
+    friend std::ostream &operator<<(std::ostream &os, const UnionFind &uf)
+    {
+        os << "Groups:" << endl;
+        for (int i = 0; i < uf.size; i++)
+        {
+            os << *uf.groups[i].get();
+        }
+        cout << endl;
+        os << "Parents:" << endl;
+        for (int i = 0; i <= uf.size; i++)
+        {
+            os << uf.parents[i];
+        }
+        cout << endl;
+        return os;
     }
 };
 

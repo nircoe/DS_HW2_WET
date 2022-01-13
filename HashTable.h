@@ -1,6 +1,8 @@
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
 #include <iostream>
+using std::cout;
+using std::endl;
 
 template <class T>
 class HashTable;
@@ -90,7 +92,7 @@ class HashTable
             }
         }
         deleteArray(old_k);
-        this->arr = new_arr;
+        this->arr = *(&new_arr);
     }
     int hash(int key)
     {
@@ -161,6 +163,7 @@ public:
 
     ~HashTable()
     {
+        cout << "~HashTable" << endl;
         deleteArray(K);
     }
 

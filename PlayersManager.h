@@ -36,7 +36,8 @@ public:
     StatusType GetPercentOfPlayersWithScoreInBounds(int GroupID, int score, int lowerLevel, int higherLevel, double *players);
     StatusType AverageHighestPlayerLevelByGroup(int GroupID, int m, double *avgLevel);
     void Quit(PlayersManager *pm);
-    void printgroup1();
+    void PrintGroup(int id);
+    friend std::ostream &operator<<(std::ostream &os, const PlayersManager &pm);
 };
 
 #endif
